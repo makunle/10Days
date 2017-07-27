@@ -41,13 +41,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(textUnderstander == null){
-            Toast.makeText(this, "is null", Toast.LENGTH_SHORT).show();
-        }
-
         understandBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if( null == textUnderstander ){
+                    // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
+                    Toast.makeText(MainActivity.this, "创建对象失败，请确认 libmsc.so 放置正确，且有调用 createUtility 进行初始化", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
                 String text = textInput.getText().toString();
                 if (textUnderstander.isUnderstanding()) {
                     textUnderstander.cancel();
