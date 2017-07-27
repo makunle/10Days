@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Thu Jul 27 20:13:28 CST 2017
+#Thu Jul 27 20:36:49 CST 2017
 25.file=P\:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\transforms\\stripDebugSymbol\\debug\\folders\\2000\\1f\\main\\lib\\armeabi\\libmsc.so
 25.base=P\:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\transforms\\stripDebugSymbol\\debug\\folders\\2000\\1f\\main
 22.set=NATIVE_RESOURCE
