@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void volley_Post() {
-        String url = "http://mobile.weather.com.cn/data/sk/101010100.html?_=1381891661455";
+        String url = "https://www.baidu.com";
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void volley_Get() {
-        String url = "http://mobile.weather.com.cn/data/sk/101010100.html?_=1381891661455";
+        String url = "http://guolin.tech/api/weather?cityid=CN101220101&key=7decd6786b9e47ba806484d665f685e6";
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="P:\Android\10Days\SpeechDemo\app\libs\Sunflower.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.1"
+        sha1="5c7af2719cb434758d95b69ec823b6527306024b">
+        <dex dex="P:\Android\10Days\SpeechDemo\app\build\intermediates\pre-dexed\debug\Sunflower_a1d81d8629ce945ba9740dada2ec7584444f8967.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Administrator\.gradle\caches\modules-2\files-2.1\com.google.android\support-v4\r7\24d0f6da34c3a2bfcf736ab42d51c91ac821ee22\support-v4-r7.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.1"
+        sha1="24d0f6da34c3a2bfcf736ab42d51c91ac821ee22">
+        <dex dex="P:\Android\10Days\SpeechDemo\app\build\intermediates\pre-dexed\debug\support-v4-r7_eda87f34ff06a42c363e0e2bbac7284e2fc37876.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="P:\Android\10Days\SpeechDemo\app\libs\Msc.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.1"
+        sha1="87c9c56d351f41f7e5fd29a036a13ceccf885e15">
+        <dex dex="P:\Android\10Days\SpeechDemo\app\build\intermediates\pre-dexed\debug\Msc_970b59e14aca618bda52e045e2849362361c8311.jar" />
+    </item>
+
+</items>

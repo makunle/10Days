@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "P:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\main_setting_btn_np.xml",
+        "source": "P:\\Android\\10Days\\SpeechDemo\\app\\src\\main\\res\\drawable\\main_setting_btn_np.xml"
+    },
+    {
+        "merged": "P:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\setting_p.png",
+        "source": "P:\\Android\\10Days\\SpeechDemo\\app\\src\\main\\res\\drawable\\setting_p.png"
+    },
+    {
+        "merged": "P:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\setting.png",
+        "source": "P:\\Android\\10Days\\SpeechDemo\\app\\src\\main\\res\\drawable\\setting.png"
+    },
+    {
+        "merged": "P:\\Android\\10Days\\SpeechDemo\\app\\build\\intermediates\\res\\merged\\debug\\drawable\\list_bg_color.xml",
+        "source": "P:\\Android\\10Days\\SpeechDemo\\app\\src\\main\\res\\drawable\\list_bg_color.xml"
+    }
+]
