@@ -54,29 +54,31 @@ public class MainActivity extends AppCompatActivity {
                 if (textUnderstander.isUnderstanding()) {
                     textUnderstander.cancel();
                 } else {
-                    int ret = textUnderstander.understandText(text, new TextUnderstanderListener() {
-                        @Override
-                        public void onResult(UnderstanderResult understanderResult) {
-                            if (null != understanderResult) {
-                                String res = understanderResult.getResultString();
-                                if (!TextUtils.isEmpty(res)) {
-                                    textOutput.setText(res);
-                                }
-                            } else {
-                                Toast.makeText(MainActivity.this, "识别结果不正确", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onError(SpeechError speechError) {
-                            Toast.makeText(MainActivity.this, "error: " + speechError.getErrorCode(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    int ret = textUnderstander.understandText(text, new MyTextUnderstanderListener());
                     if (ret != 0) {
                         Toast.makeText(MainActivity.this, "语义理解失败:" + ret, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
+    }
+
+    private class MyTextUnderstanderListener implements TextUnderstanderListener {
+        @Override
+        public void onResult(UnderstanderResult understanderResult) {
+            if (null != understanderResult) {
+                String res = understanderResult.getResultString();
+                if (!TextUtils.isEmpty(res)) {
+                    textOutput.setText(res);
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "识别结果不正确", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onError(SpeechError speechError) {
+            Toast.makeText(MainActivity.this, "error: " + speechError.getErrorCode(), Toast.LENGTH_SHORT).show();
+        }
     }
 }
