@@ -14,6 +14,12 @@ import com.android.volley.toolbox.StringRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+/***
+ * 1、Volley的Get和Post请求方式的使用
+ *
+ * 2、Volley的网络请求队列建立和取消队列请求及Activity周期关联
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
