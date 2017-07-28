@@ -1,29 +1,43 @@
 package com.iflytek.mkl.vociesdktest;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechUnderstander;
+import com.iflytek.cloud.SpeechUnderstanderListener;
 import com.iflytek.cloud.TextUnderstander;
 import com.iflytek.cloud.TextUnderstanderListener;
 import com.iflytek.cloud.UnderstanderResult;
+import com.iflytek.mkl.vociesdktest.Gson.GsonUtil;
+import com.iflytek.mkl.vociesdktest.Gson.IflyWeather;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     private TextUnderstander textUnderstander;
+    private SpeechUnderstander speechUnderstander;
 
     EditText textOutput;
     EditText textInput;
-    Button understandBtn;
-    Button startListenBtn;
-    Button endListenBtn;
+
+    private Toast toast;
+
+    private void showTip(String msg) {
+        if (toast == null) toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        toast.setText(msg);
+        toast.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,55 +46,172 @@ public class MainActivity extends AppCompatActivity {
 
         textOutput = (EditText) findViewById(R.id.et_output);
         textInput = (EditText) findViewById(R.id.et_input);
-        understandBtn = (Button) findViewById(R.id.btn_understand);
 
-        textUnderstander = TextUnderstander.createTextUnderstander(this, new InitListener() {
-            @Override
-            public void onInit(int code) {
-                if (code != ErrorCode.SUCCESS) {
-                    Toast.makeText(MainActivity.this, "初始化失败", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        textUnderstander = TextUnderstander.createTextUnderstander(this, initListener);
+        speechUnderstander = SpeechUnderstander.createUnderstander(this, initListener);
 
-        understandBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if( null == textUnderstander ){
-                    // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
-                    Toast.makeText(MainActivity.this, "创建对象失败，请确认 libmsc.so 放置正确，且有调用 createUtility 进行初始化", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                
-                String text = textInput.getText().toString();
-                if (textUnderstander.isUnderstanding()) {
-                    textUnderstander.cancel();
-                } else {
-                    int ret = textUnderstander.understandText(text, new MyTextUnderstanderListener());
-                    if (ret != 0) {
-                        Toast.makeText(MainActivity.this, "语义理解失败:" + ret, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+        findViewById(R.id.btn_startlisten).setOnClickListener(btnListener);
+        findViewById(R.id.btn_understand).setOnClickListener(btnListener);
     }
 
-    private class MyTextUnderstanderListener implements TextUnderstanderListener {
+    private View.OnClickListener btnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.btn_understand:
+                    doTextUnderstand();
+                    break;
+                case R.id.btn_startlisten:
+                    doSpeechUnderstand();
+                    break;
+            }
+        }
+    };
+
+    private void doTextUnderstand() {
+        if (null == textUnderstander) {
+            // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
+            showTip("创建对象失败，请确认 libmsc.so 放置正确，且有调用 " +
+                    "createUtility 进行初始化");
+            return;
+        }
+
+        String text = textInput.getText().toString();
+        if (textUnderstander.isUnderstanding()) {
+            textUnderstander.cancel();
+        } else {
+            int ret = textUnderstander.understandText(text, textUnderstanderListener);
+            if (ret != 0) {
+                showTip("语义理解失败:" + ret);
+            }
+        }
+    }
+
+    private void doSpeechUnderstand() {
+        setSpeechUnderstanderParams();
+        if (speechUnderstander.isUnderstanding()) {
+            speechUnderstander.stopUnderstanding();
+            showTip("停止录音");
+        } else {
+            int ret = speechUnderstander.startUnderstanding(speechUnderstanderListener);
+            if (ret != 0) {
+                showTip("语义理解失败，错误码：" + ret);
+            } else {
+                showTip("请开始说话...");
+            }
+        }
+    }
+
+    private TextUnderstanderListener textUnderstanderListener = new TextUnderstanderListener() {
         @Override
         public void onResult(UnderstanderResult understanderResult) {
             if (null != understanderResult) {
-                String res = understanderResult.getResultString();
-                if (!TextUtils.isEmpty(res)) {
-                    textOutput.setText(res);
+                String text = understanderResult.getResultString();
+                if (!TextUtils.isEmpty(text)) {
+                    handleUnderstanderResult(text);
                 }
             } else {
-                Toast.makeText(MainActivity.this, "识别结果不正确", Toast.LENGTH_SHORT).show();
+                showTip("识别结果不正确");
             }
         }
 
         @Override
         public void onError(SpeechError speechError) {
-            Toast.makeText(MainActivity.this, "error: " + speechError.getErrorCode(), Toast.LENGTH_SHORT).show();
+            showTip("error: " + speechError.getErrorCode());
+        }
+    };
+
+    private SpeechUnderstanderListener speechUnderstanderListener = new com.iflytek.cloud.SpeechUnderstanderListener() {
+        @Override
+        public void onResult(UnderstanderResult understanderResult) {
+            if (null != understanderResult) {
+                String text = understanderResult.getResultString();
+                if (!TextUtils.isEmpty(text)) {
+                    Log.d(TAG, text);
+                    handleUnderstanderResult(text);
+                }
+            } else {
+                showTip("结果识别不正确");
+            }
+        }
+
+        @Override
+        public void onVolumeChanged(int i, byte[] data) {
+            showTip("说话音量 " + i);
+        }
+
+        @Override
+        public void onBeginOfSpeech() {
+            textOutput.append("\n开始说话");
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            textOutput.append("\n结束说话");
+        }
+
+        @Override
+        public void onError(SpeechError error) {
+            if (error.getErrorCode() == ErrorCode.MSP_ERROR_NO_DATA) {
+                showTip(error.getPlainDescription(true));
+            } else {
+                showTip(error.getPlainDescription(true) + ", ");
+            }
+        }
+
+        @Override
+        public void onEvent(int i, int i1, int i2, Bundle bundle) {
+
+        }
+    };
+
+    private void handleUnderstanderResult(String text) {
+        IflyWeather weather = GsonUtil.handleIflyWeatherData(text);
+        if (weather != null) {
+            String outstr = weather.getAnswer().getText() + "\n\n" +
+                    weather.getData().getResult().get(0).info();
+
+            textOutput.setText(outstr);
+
+
+            textInput.setText(weather.getText());
+        }
+    }
+
+    private InitListener initListener = new InitListener() {
+        @Override
+        public void onInit(int code) {
+            if (code != ErrorCode.SUCCESS) {
+                showTip("初始化失败 error code: " + code);
+            }
+        }
+    };
+
+
+    public void setSpeechUnderstanderParams() {
+        speechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+        speechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
+
+        speechUnderstander.setParameter(SpeechConstant.VAD_BOS, "4000");
+        speechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
+        speechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
+
+        speechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        speechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState() + "/msc/sud.wav");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (speechUnderstander != null) {
+            speechUnderstander.cancel();
+            speechUnderstander.destroy();
+        }
+        if (textUnderstander != null) {
+            if (textUnderstander.isUnderstanding())
+                textUnderstander.cancel();
+            textUnderstander.destroy();
         }
     }
 }
