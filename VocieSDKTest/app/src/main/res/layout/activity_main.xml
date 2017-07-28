@@ -7,21 +7,12 @@
     android:orientation="vertical"
     tools:context="com.iflytek.mkl.vociesdktest.MainActivity">
 
-    <ScrollView
+    <EditText
+        android:id="@+id/et_output"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <EditText
-            android:id="@+id/et_output"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-
-            android:enabled="false" />
-
-    </ScrollView>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:ems="10"/>
 
     <LinearLayout
         android:layout_width="match_parent"
