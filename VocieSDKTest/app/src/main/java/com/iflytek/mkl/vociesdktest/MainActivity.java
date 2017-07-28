@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     EditText textOutput;
     EditText textInput;
     Button understandBtn;
+    Button startListenBtn;
+    Button endListenBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
