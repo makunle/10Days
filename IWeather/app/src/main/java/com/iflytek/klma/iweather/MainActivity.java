@@ -3,11 +3,9 @@ package com.iflytek.klma.iweather;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.iflytek.klma.iweather.ui.CityChooseFragment;
+import com.iflytek.klma.iweather.ui.CountyChooseFragment;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
-import com.iflytek.klma.iweather.util.dbtool.DbInit;
 
 import org.litepal.LitePal;
 
@@ -22,12 +20,12 @@ public class MainActivity extends AppCompatActivity {
 
         LitePal.initialize(this);   //litepal数据库初始化
 
-        CityChooseFragment cf = new CityChooseFragment();
+        CountyChooseFragment cf = new CountyChooseFragment();
         replaceFragment(cf);
 
-        new DatabaseUtil(this).firstTimeInitDataBase();
+        DatabaseUtil.getInstance().firstTimeInitDataBase(this);
 //        DbInit.initCityDb();
-        DbInit.testDb();
+//        DbInit.testDb();
     }
 
     private void replaceFragment(Fragment fragment){

@@ -1,11 +1,10 @@
 package com.iflytek.klma.iweather.util;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import org.litepal.LitePal;
+import com.iflytek.klma.iweather.db.County;
+
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
@@ -14,36 +13,41 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
- * 用于将
+ * 数据库Util
  */
 
 public class DatabaseUtil {
     private static final String TAG = "IWeather";
 
-    private Context context;
-    private String packagename;
-    private String DATABASE_PATH;
-    private static final String dbName = "iweather.db";
-    private String dbFilePath;
+    private static  DatabaseUtil instance = new DatabaseUtil();
 
-    public DatabaseUtil(Context context){
-        this.context = context;
-        packagename = context.getPackageName();
-        DATABASE_PATH = "/data/data/"+packagename+"/databases/";
-        dbFilePath = DATABASE_PATH + dbName;
+    public static DatabaseUtil getInstance(){
+        return instance;
     }
+
     /**
-     * apk安装后首次运行时初始化数据库数据
+     * 如果是apk安装后的首次运行，初始化数据库
+     * @param context
      */
-    public void firstTimeInitDataBase(){
-        if(!istDatabaseExist()){
-            copyDatabase();
+    public void firstTimeInitDataBase(Context context){
+        String packagename = context.getPackageName();
+        String dbFloder = "/data/data/"+packagename+"/databases/";
+        String dbName = "iweather.db";
+        String dbFilePath = dbFloder + dbName;
+        if(!istDatabaseExist(dbFilePath)){
+            copyDatabase(dbFloder, dbName, context);
         }
     }
 
-    public boolean istDatabaseExist(){
+    /**
+     * 判断数据库是否存在
+     * @param dbFilePath 数据库路径
+     * @return
+     */
+    private boolean istDatabaseExist(String dbFilePath){
         SQLiteDatabase db = null;
         try{
 
@@ -57,13 +61,19 @@ public class DatabaseUtil {
         return db != null;
     }
 
-    private void copyDatabase(){
-        File dir = new File(DATABASE_PATH);
+    /**
+     * 拷贝assets/iweather.db -> /data/data/[packagename]/database/下
+     * @param dbFloder
+     * @param dbName
+     * @param context
+     */
+    private void copyDatabase(String dbFloder, String dbName, Context context){
+        File dir = new File(dbFloder);
         if(!dir.exists()){
             dir.mkdir();
         }
         try {
-            OutputStream os = new FileOutputStream(dbFilePath);
+            OutputStream os = new FileOutputStream(dbFloder + dbName);
             InputStream is = context.getAssets().open(dbName);
             byte[] buffer = new byte[1024];
             int count = 0;
@@ -78,5 +88,14 @@ public class DatabaseUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 获取热门城市
+     * @return
+     */
+    public List<County> getHotCounties(){
+        List<County> counties = DataSupport.where("isHot = ? ", "1").find(County.class);
+        return counties;
     }
 }
