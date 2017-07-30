@@ -20,6 +20,10 @@ public class County extends DataSupport {
 
     private int cityId;
 
+    public City getCity(){
+        return DataSupport.where("id = ", String.valueOf(cityId)).findFirst(City.class);
+    }
+
     public int getId() {
         return id;
     }

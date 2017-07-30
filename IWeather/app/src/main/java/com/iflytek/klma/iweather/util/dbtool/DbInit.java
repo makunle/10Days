@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.util.Log;
 
 import com.iflytek.klma.iweather.db.County;
-import com.iflytek.klma.iweather.util.GetCitiList;
 
 import org.litepal.crud.DataSupport;
 

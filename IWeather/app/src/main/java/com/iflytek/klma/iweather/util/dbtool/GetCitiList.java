@@ -1,4 +1,4 @@
-package com.iflytek.klma.iweather.util;
+package com.iflytek.klma.iweather.util.dbtool;
 
 import android.util.Log;
 
@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.iflytek.klma.iweather.db.City;
 import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.db.Province;
+import com.iflytek.klma.iweather.util.HttpUtil;
 import com.iflytek.klma.iweather.util.dbtool.icity;
 import com.iflytek.klma.iweather.util.dbtool.icounty;
 import com.iflytek.klma.iweather.util.dbtool.iprovince;

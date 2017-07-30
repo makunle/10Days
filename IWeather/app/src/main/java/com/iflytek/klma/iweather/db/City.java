@@ -19,6 +19,10 @@ public class City extends DataSupport {
 
     private int provinceId;
 
+    public Province getProvince(){
+        return DataSupport.where("id = ?",String.valueOf(provinceId)).findFirst(Province.class);
+    }
+
     public int getId() {
         return id;
     }

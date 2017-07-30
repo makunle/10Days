@@ -1,10 +1,11 @@
-package com.iflytek.klma.iweather;
+package com.iflytek.klma.iweather.ui;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.iflytek.klma.iweather.ui.CountyChooseFragment;
+import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 
 import org.litepal.LitePal;
@@ -20,15 +21,21 @@ public class MainActivity extends AppCompatActivity {
 
         LitePal.initialize(this);   //litepal数据库初始化
 
-        CountyChooseFragment cf = new CountyChooseFragment();
-        replaceFragment(cf);
+//        LitePal.getDatabase();
 
         DatabaseUtil.getInstance().firstTimeInitDataBase(this);
+
+        if(DatabaseUtil.getInstance().getAllWeatherBookMark().size() > 0){
+            startActivity(new Intent(this, WeatherShowActivity.class));
+        }else{
+            startActivity(new Intent(this, CountyChooseActivity.class));
+        }
+
+        finish();
+
+//        LitePal.getDatabase();
 //        DbInit.initCityDb();
 //        DbInit.testDb();
-    }
 
-    private void replaceFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_layout, fragment).commit();
     }
 }
