@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="iweather" />
+    <version value="7" />
+    <list>
+        <mapping class="com.iflytek.klma.iweather.db.WeatherBookmark" />
+        <mapping class="com.iflytek.klma.iweather.db.City" />
+        <mapping class="com.iflytek.klma.iweather.db.Province" />
+        <mapping class="com.iflytek.klma.iweather.db.County" />
+    </list>
+</litepal>

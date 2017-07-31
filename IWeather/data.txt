@@ -1,0 +1,31 @@
+
+语音云天气json数据
+{"data":{"result":[{"airData":53,"airQuality":"良","city":"合肥","date":"2017-07-29","dateLong":1501257600,"exp":{"ct":{"expName":"穿衣指数","level":"炎热","prompt":"天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。"}},"humidity":"56%","lastUpdateTime":"2017-07-29 12:39:15","pm25":"36","temp":35,"tempRange":"28℃~37℃","weather":"多云","weatherType":1,"wind":"东北风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-30","dateLong":1501344000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"雷阵雨","weatherType":4,"wind":"东风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-31","dateLong":1501430400,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"25℃~34℃","weather":"中雨","weatherType":8,"wind":"北风微风","windLevel":0},{"city":"合肥","date":"2017-08-01","dateLong":1501516800,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨","weatherType":7,"wind":"北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-02","dateLong":1501603200,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨转阴","weatherType":7,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-03","dateLong":1501689600,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-04","dateLong":1501776000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2}]},"rc":0,"semantic":[{"intent":"QUERY","slots":[{"name":"location.city","value":"合肥市","normValue":"合肥市"},{"name":"location.cityAddr","value":"合肥","normValue":"合肥"},{"name":"location.type","value":"LOC_BASIC","normValue":"LOC_BASIC"},{"name":"queryType","value":"内容"},{"name":"subfocus","value":"天气状态"}]}],"service":"weather","text":"合肥天气","uuid":"atn002f6d5d@un46360cd780456f2601","used_state":{"state_key":"fg::weather::default::default","state":"default"},"answer":{"text":"\"合肥\"今天\"多云\"，\"28℃~37℃\"，\"东北风3-4级\""},"dialog_stat":"DataValid","sid":"sch337fe700@ch47750cd78045477500"}
+
+语义理解返回热门城市json：
+{
+    "answer": {
+        "answerType": "openQA",
+        "emotion": "default",
+        "question": {
+            "question": "热门城市",
+            "question_ws": "热门/AA//  城市/NN//"
+        },
+        "text": "北京、天津、上海、重庆、沈阳、大连、长春、哈尔滨、郑州、武汉、长沙、广州、合肥、深圳、南京、西安、无锡、常州、苏州、杭州、宁波、济南、青岛、福州、厦门、成都、昆明",
+        "topic": 33606425643688550,
+        "topicID": 33606425643688550,
+        "type": "T"
+    },
+    "man_intv": "",
+    "no_nlu_result": 0,
+    "operation": "ANSWER",
+    "rc": 0,
+    "service": "openQA",
+    "status": 0,
+    "text": "热门城市",
+    "uuid": "atn001690f5@un6f730cd7832d6f2a01",
+    "sid": "atn001690f5@un6f730cd7832d6f2a01"
+}
+
+天气请求链接
+http://guolin.tech/api/weather?cityid=CN101220101&key=7decd6786b9e47ba806484d665f685e6
