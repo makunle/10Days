@@ -117,9 +117,11 @@ public class WeatherInfoFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
+        if (DatabaseUtil.getInstance().getWeatherBookmarkById(bookmarkId) == null && savedInstanceState != null) {
             int id = savedInstanceState.getInt("id", -1);
-            if (id != -1) bookmarkId = id;
+            if (DatabaseUtil.getInstance().getWeatherBookmarkById(id) != null){
+                    bookmarkId = id;
+            }
         }
     }
 }

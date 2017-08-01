@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.iflytek.klma.iweather.R;
+import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
 import com.iflytek.klma.iweather.gson.HefengWeather;
 import com.iflytek.klma.iweather.util.DBChangeMsg;
@@ -186,7 +187,9 @@ public class WeatherShowActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             int bookmarkId = weatherInfoPages.get(position).getBookmarkId();
-            String name = DatabaseUtil.getInstance().getCountyByBookmarkId(bookmarkId).getName();
+            County county = DatabaseUtil.getInstance().getCountyByBookmarkId(bookmarkId);
+            if(county == null) return;
+            String name = county.getName();
             countyName.setText(name);
             showTime.setText("--" + position + "--");
         }

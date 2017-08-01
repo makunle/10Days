@@ -1,20 +1,13 @@
 package com.iflytek.klma.iweather.ui;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.klma.iweather.R;
-import com.iflytek.klma.iweather.util.AndroidUtil;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
+import com.iflytek.klma.iweather.util.dbtool.DbInit;
 
 import org.litepal.LitePal;
 
@@ -26,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //用来生成随apk打包的数据库
+//        LitePal.initialize(this);   //litepal数据库初始化
+//        DbInit.initCityDb();
+//        DbInit.makeHotCity();
 
         init();
 
