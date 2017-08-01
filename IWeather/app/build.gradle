@@ -39,4 +39,5 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     testCompile 'junit:junit:4.12'
     compile files('libs/Sunflower.jar')
+    compile files('libs/Msc.jar')
 }
