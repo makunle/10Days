@@ -12,7 +12,6 @@ import java.util.List;
 
 public class City extends DataSupport {
 
-    @Column()
     private int id;
 
     private String name;            //市名称

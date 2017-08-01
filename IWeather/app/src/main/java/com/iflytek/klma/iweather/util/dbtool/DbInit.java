@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 初始化以及手工操作数据库
+ * 从和风天气拉取全国城市信息，存入数据库a，将a导出后，在之后的工程中同apk打包到一起
  */
 
 public class DbInit {
