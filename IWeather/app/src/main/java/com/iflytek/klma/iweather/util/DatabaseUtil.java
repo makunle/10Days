@@ -32,12 +32,15 @@ public class DatabaseUtil {
         return instance;
     }
 
+    private Context context;
+
     /**
      * 如果是apk安装后的首次运行，初始化数据库
      *
      * @param context
      */
     public void firstTimeInitDataBase(Context context) {
+        this.context = context;
         String packagename = context.getPackageName();
         String dbFloder = "/data/data/" + packagename + "/databases/";
         String dbName = "iweather.db";
@@ -147,9 +150,8 @@ public class DatabaseUtil {
 
     /**
      * 根据县名获取数据库县对象
-     *
      * @param countyName
-     * @return
+     * @return 如果为null表示未获取到
      */
     public County getCountyByName(String countyName) {
         County county = DataSupport.where("name = ?", countyName).findFirst(County.class);

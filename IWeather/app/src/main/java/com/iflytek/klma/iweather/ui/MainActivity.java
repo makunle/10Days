@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         LitePal.initialize(this);   //litepal数据库初始化
+        SpeechUtility.createUtility(getApplicationContext(), getString(R.string.appid));
 
 //        LitePal.getDatabase();
 

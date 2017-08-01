@@ -1,6 +1,144 @@
 
 语音云天气json数据
-{"data":{"result":[{"airData":53,"airQuality":"良","city":"合肥","date":"2017-07-29","dateLong":1501257600,"exp":{"ct":{"expName":"穿衣指数","level":"炎热","prompt":"天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。"}},"humidity":"56%","lastUpdateTime":"2017-07-29 12:39:15","pm25":"36","temp":35,"tempRange":"28℃~37℃","weather":"多云","weatherType":1,"wind":"东北风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-30","dateLong":1501344000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"雷阵雨","weatherType":4,"wind":"东风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-31","dateLong":1501430400,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"25℃~34℃","weather":"中雨","weatherType":8,"wind":"北风微风","windLevel":0},{"city":"合肥","date":"2017-08-01","dateLong":1501516800,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨","weatherType":7,"wind":"北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-02","dateLong":1501603200,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨转阴","weatherType":7,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-03","dateLong":1501689600,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-04","dateLong":1501776000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2}]},"rc":0,"semantic":[{"intent":"QUERY","slots":[{"name":"location.city","value":"合肥市","normValue":"合肥市"},{"name":"location.cityAddr","value":"合肥","normValue":"合肥"},{"name":"location.type","value":"LOC_BASIC","normValue":"LOC_BASIC"},{"name":"queryType","value":"内容"},{"name":"subfocus","value":"天气状态"}]}],"service":"weather","text":"合肥天气","uuid":"atn002f6d5d@un46360cd780456f2601","used_state":{"state_key":"fg::weather::default::default","state":"default"},"answer":{"text":"\"合肥\"今天\"多云\"，\"28℃~37℃\"，\"东北风3-4级\""},"dialog_stat":"DataValid","sid":"sch337fe700@ch47750cd78045477500"}
+{
+    "data": {"result": [
+        {
+            "airData": 40,
+            "airQuality": "优",
+            "city": "合肥",
+            "date": "2017-08-01",
+            "dateLong": 1501516800,
+            "exp": {"ct": {
+                "expName": "穿衣指数",
+                "level": "炎热",
+                "prompt": "天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。"
+            }},
+            "humidity": "58%",
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "pm25": "21",
+            "temp": 33,
+            "tempRange": "26℃~32℃",
+            "weather": "雷阵雨转中雨",
+            "weatherType": 4,
+            "wind": "东风4-5级",
+            "windLevel": 2
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-02",
+            "dateLong": 1501603200,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "27℃~32℃",
+            "weather": "大雨",
+            "weatherType": 9,
+            "wind": "南风4-5级",
+            "windLevel": 2
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-03",
+            "dateLong": 1501689600,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "27℃~33℃",
+            "weather": "中雨转小雨",
+            "weatherType": 8,
+            "wind": "西南风微风",
+            "windLevel": 0
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-04",
+            "dateLong": 1501776000,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "27℃~34℃",
+            "weather": "小雨转多云",
+            "weatherType": 7,
+            "wind": "西南风微风",
+            "windLevel": 0
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-05",
+            "dateLong": 1501862400,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "27℃~34℃",
+            "weather": "小雨转多云",
+            "weatherType": 7,
+            "wind": "西南风微风",
+            "windLevel": 0
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-06",
+            "dateLong": 1501948800,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "27℃~33℃",
+            "weather": "小雨",
+            "weatherType": 7,
+            "wind": "西风微风",
+            "windLevel": 0
+        },
+        {
+            "city": "合肥",
+            "date": "2017-08-07",
+            "dateLong": 1502035200,
+            "lastUpdateTime": "2017-08-01 13:42:48",
+            "tempRange": "26℃~31℃",
+            "weather": "中雨转小雨",
+            "weatherType": 8,
+            "wind": "西南风微风",
+            "windLevel": 0
+        }
+    ]},
+    "rc": 0,
+    "semantic": [{
+        "intent": "QUERY",
+        "slots": [
+            {
+                "name": "location.city",
+                "value": "合肥市",
+                "normValue": "合肥市"
+            },
+            {
+                "name": "location.cityAddr",
+                "value": "合肥",
+                "normValue": "合肥"
+            },
+            {
+                "name": "location.type",
+                "value": "LOC_BASIC",
+                "normValue": "LOC_BASIC"
+            },
+            {
+                "name": "queryType",
+                "value": "内容"
+            },
+            {
+                "name": "subfocus",
+                "value": "天气状态"
+            }
+        ]
+    }],
+    "service": "weather",
+    "text": "合肥天气",
+    "uuid": "atn0022dcd1@un6f730cdb61646f2a01",
+    "used_state": {
+        "state_key": "fg::weather::default::default",
+        "state": "default"
+    },
+    "answer": {"text": "\"合肥\"今天\"雷阵雨转中雨\"，\"26℃~32℃\"，\"东风4-5级\"，雨天出行记得准备雨伞"},
+    "dialog_stat": "DataValid",
+    "sid": "sch4b7fe700@chbf6d0cdb6164bf6d00"
+}
+
+错误语义理解数据
+{
+    "rc": 4,
+    "uuid": "atn0022e0ba@un6f730cdb61fc6f2a01",
+    "sid": "schd57fa700@ch3d740cdb61fc3d7400",
+    "text": "洗"
+}
+
 
 语义理解返回热门城市json：
 {

@@ -24,6 +24,10 @@ public class IflyWeather {
      * sid : sch337fe700@ch47750cd78045477500
      */
 
+    public String getCountyName(){
+        return data.result.get(0).city;
+    }
+
     private DataBean data;
     private int rc;
     private String service;

@@ -71,6 +71,10 @@ public class HefengWeather {
         this.HeWeather = HeWeather;
     }
 
+    public boolean isStatusOk(){
+        return "ok".equals(HeWeather.get(0).status);
+    }
+
     public static class HeWeatherBean {
         /**
          * aqi : {"city":{"aqi":"46","co":"1","no2":"16","o3":"129","pm10":"41","pm25":"32","qlty":"优","so2":"9"}}

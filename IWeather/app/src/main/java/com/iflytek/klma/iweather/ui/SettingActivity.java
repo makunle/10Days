@@ -43,7 +43,6 @@ public class SettingActivity extends AppCompatActivity {
         bookmarkList.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.setHeaderTitle("选择操作");
                 menu.add(0, 0, 0, "删除");
                 menu.add(0, 0, 0, "提醒");
             }
@@ -51,6 +50,11 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 城市列表长按菜单响应
+     * @param item
+     * @return
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
@@ -73,6 +77,9 @@ public class SettingActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * 设置页面返回\添加按钮响应
+     */
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
