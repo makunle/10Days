@@ -36,7 +36,8 @@ public class WeatherInfoFragment extends Fragment {
 
     private View view;
 
-    public WeatherInfoFragment(){}
+    public WeatherInfoFragment() {
+    }
 
     public int getBookmarkId() {
         return bookmarkId;
@@ -49,7 +50,7 @@ public class WeatherInfoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(view == null){
+        if (view == null) {
             view = inflater.inflate(R.layout.weather_info, container, false);
             weatherInfo = (TextView) view.findViewById(R.id.weather_info);
             nowTemperature = (TextView) view.findViewById(R.id.now_temperature);
@@ -58,48 +59,67 @@ public class WeatherInfoFragment extends Fragment {
             windDirect = (TextView) view.findViewById(R.id.wind_direct);
             windLevel = (TextView) view.findViewById(R.id.wind_level);
         }
-        Log.d(TAG, "onCreateView: Fragment"+bookmarkId+" "+(weatherInfo == null) + " " + bookmarkId);
+        Log.d(TAG, "onCreateView: Fragment" + bookmarkId + " " + (weatherInfo == null) + " " + bookmarkId);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume: "+bookmarkId);
+        Log.d(TAG, "onResume: " + bookmarkId);
         refreshView();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: "+bookmarkId);
+        Log.d(TAG, "onStart: " + bookmarkId);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated: "+bookmarkId);
+        Log.d(TAG, "onViewCreated: " + bookmarkId);
     }
 
-    public boolean isViewCreated(){
+    public boolean isViewCreated() {
         return view != null;
     }
 
-    public void refreshView(){
+    public void refreshView() {
         Log.d(TAG, "refreshView: ");
 
         String weatherJson = DatabaseUtil.getInstance().getWeatherJsonFromBookmarkId(bookmarkId);
-        if(TextUtils.isEmpty(weatherJson)) return;
+        if (TextUtils.isEmpty(weatherJson)) return;
 
         HefengWeather weather = JsonUtil.handleHefengJson(weatherJson);
-        if(weather == null) return;
+        if (weather == null) return;
 
-        weatherInfo.setText("天气状况："+weather.getInfo());
-        nowTemperature.setText("当前温度："+weather.getNowTemperature());
-        minTemperature.setText("最低气温："+weather.getMinTemperature());
-        maxTemperature.setText("最高气温："+weather.getMaxTemperature());
-        windDirect.setText("风向："+weather.getWindDirect());
-        windLevel.setText("风力："+weather.getWindLevel());
+        weatherInfo.setText("天气状况：" + weather.getInfo());
+        nowTemperature.setText("当前温度：" + weather.getNowTemperature());
+        minTemperature.setText("最低气温：" + weather.getMinTemperature());
+        maxTemperature.setText("最高气温：" + weather.getMaxTemperature());
+        windDirect.setText("风向：" + weather.getWindDirect());
+        windLevel.setText("风力：" + weather.getWindLevel());
         Log.d(TAG, "refreshView: done");
+    }
+
+    /**
+     * 销毁前保存bookmarkId，之后加载时读取，解决旋转屏幕无信息问题
+     * @param outState
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("id", bookmarkId);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            int id = savedInstanceState.getInt("id", -1);
+            if (id != -1) bookmarkId = id;
+        }
     }
 }

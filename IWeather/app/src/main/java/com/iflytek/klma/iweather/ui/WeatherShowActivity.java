@@ -2,14 +2,18 @@ package com.iflytek.klma.iweather.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.iflytek.klma.iweather.R;
@@ -30,7 +34,7 @@ import java.util.List;
 
 public class WeatherShowActivity extends AppCompatActivity {
 
-    private static final String TAG = "IWeather";
+    private static final String TAG = "WeatherShowActivity";
     private static final String URL = "http://guolin.tech/api/weather?cityid=";
     private static final String KEY = "7decd6786b9e47ba806484d665f685e6";
 
@@ -79,11 +83,12 @@ public class WeatherShowActivity extends AppCompatActivity {
 
     /**
      * 相应数据库的增删操作，反映到界面上
+     *
      * @param msg
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDatabaseDataChanged(DBChangeMsg msg){
-        switch (msg.getType()){
+    public void onDatabaseDataChanged(DBChangeMsg msg) {
+        switch (msg.getType()) {
             case DBChangeMsg.ADD:
                 WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookmarkById(msg.getBookMarkId());
                 WeatherInfoFragment fragment = new WeatherInfoFragment();
@@ -93,8 +98,7 @@ public class WeatherShowActivity extends AppCompatActivity {
                 break;
             case DBChangeMsg.DEL:
                 for (int i = 0; i < weatherInfoPages.size(); i++) {
-                    if(weatherInfoPages.get(i).getBookmarkId() == msg.getBookMarkId()){
-                        weatherInfoPages.get(i).onDestroy();
+                    if (weatherInfoPages.get(i).getBookmarkId() == msg.getBookMarkId()) {
                         weatherInfoPages.remove(i);
                         break;
                     }
@@ -103,7 +107,7 @@ public class WeatherShowActivity extends AppCompatActivity {
         }
         //更新WeatherBookmark的showOrder
         for (int i = 0; i < weatherInfoPages.size(); i++) {
-            DatabaseUtil.getInstance().updateWeatherBookMarkShowOrder(weatherInfoPages.get(i).getBookmarkId(), i+1);
+            DatabaseUtil.getInstance().updateWeatherBookMarkShowOrder(weatherInfoPages.get(i).getBookmarkId(), i + 1);
         }
 
         pagerAdapter.notifyDataSetChanged();
@@ -114,20 +118,21 @@ public class WeatherShowActivity extends AppCompatActivity {
     /**
      * 根据当前数据库的内容初始化ViewPage，并设置最初页面标题
      */
-    private void initViewPagers(){
+    private void initViewPagers() {
         List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
         for (WeatherBookmark bookmark : bookmarks) {
             WeatherInfoFragment fragment = new WeatherInfoFragment();
             fragment.setBookmarkId(bookmark.getId());
             weatherInfoPages.add(fragment);
         }
+
         pageContainer.setAdapter(pagerAdapter);
         pageContainer.addOnPageChangeListener(pageChangeListener);
 
-        int currentItem = bookmarks.size()-1;
+        int currentItem = bookmarks.size() - 1;
         pageContainer.setCurrentItem(currentItem);
         countyName.setText(bookmarks.get(currentItem).getCounty().getName());
-        showTime.setText("--"+(currentItem)+"--");
+        showTime.setText("--" + (currentItem) + "--");
     }
 
     /**
@@ -151,7 +156,7 @@ public class WeatherShowActivity extends AppCompatActivity {
     }
 
     /**
-     * 用于ViewPage的显示
+     * 用于ViewPage的显示，使用FragmentStatePagerAdapter控制删除问题
      */
     private FragmentStatePagerAdapter pagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
         @Override
@@ -163,6 +168,11 @@ public class WeatherShowActivity extends AppCompatActivity {
         public int getCount() {
             return weatherInfoPages.size();
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return PagerAdapter.POSITION_NONE;  //解决删除Fragment问题
+        }
     };
 
     /**
@@ -171,7 +181,6 @@ public class WeatherShowActivity extends AppCompatActivity {
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            Log.d(TAG, "onPageScrolled: "+position+" "+positionOffset+" "+positionOffsetPixels);
         }
 
         @Override
@@ -227,7 +236,7 @@ public class WeatherShowActivity extends AppCompatActivity {
      */
     private void showDataToPages() {
         for (WeatherInfoFragment wf : weatherInfoPages) {
-            if(wf.isViewCreated()) wf.refreshView();
+            if (wf.isViewCreated()) wf.refreshView();
         }
     }
 
