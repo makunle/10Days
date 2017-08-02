@@ -7,6 +7,7 @@ package com.iflytek.klma.iweather.util;
 public class DBChangeMsg {
     public static final int ADD = 1;
     public static final int DEL = 2;
+    public static final int HAV = 3;
 
     private int bookMarkId;  //对应的WeatherBookmark id
     private int type;           //事件类型

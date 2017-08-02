@@ -101,6 +101,14 @@ public class WeatherShowActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case DBChangeMsg.HAV:
+                for (int i = 0; i < mWeatherInfoPages.size(); i++) {
+                    if(mWeatherInfoPages.get(i).getmBookmarkId() == msg.getBookMarkId()){
+                        mPageContainer.setCurrentItem(i);
+                        break;
+                    }
+                }
+                break;
         }
         //更新WeatherBookmark的showOrder
         for (int i = 0; i < mWeatherInfoPages.size(); i++) {

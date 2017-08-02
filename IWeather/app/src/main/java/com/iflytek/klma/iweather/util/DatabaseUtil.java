@@ -123,7 +123,10 @@ public class DatabaseUtil {
         County county = getCountyByName(countyName);
         if (county == null) return false;
         WeatherBookmark weatherBookmark = getWeatherBookMarkByCountyName(countyName);
-        if (weatherBookmark != null) return true;
+        if (weatherBookmark != null){
+            EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.HAV));
+            return true;
+        }
 
         List<WeatherBookmark> bookmarks = getAllWeatherBookMark();
         int showOrder = 1;

@@ -8,7 +8,7 @@
     <com.iflytek.klma.iweather.ui.MyToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="50dp"
         app:inputTextHint="国内城市搜索"
         app:titleType="search" />
 

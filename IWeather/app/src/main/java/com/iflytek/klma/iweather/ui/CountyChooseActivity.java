@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -56,7 +57,7 @@ public class CountyChooseActivity extends AppCompatActivity {
     private static final String TAG = "CountyChooseActivity";
     private static final int RECORD_AUDIO_CODE = 1;
 
-//    private EditText mCityInputEt;    //城市查询输入框
+    //    private EditText mCityInputEt;    //城市查询输入框
 //    private Button mSearchBtn;        //城市搜索按钮
     private Button mSpeechSearchBtn;  //语音搜索按钮
     private RecyclerView mCountyListRv;   //城市列表
@@ -105,15 +106,25 @@ public class CountyChooseActivity extends AppCompatActivity {
         mToolbar.getSearchLeftButton().setOnClickListener(toolbarButtonClickListener);
         mToolbar.getSearchRightButton().setOnClickListener(toolbarButtonClickListener);
 
-        mSearchResultList.add("123");
         mSearchedAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mSearchResultList);
         mSearchedListView.setAdapter(mSearchedAdapter);
+        mSearchedListView.setOnItemClickListener(selectResultClickListener);
     }
+
+    private AdapterView.OnItemClickListener selectResultClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String countyName = mSearchedAdapter.getItem(position).split(" -")[0];
+            DatabaseUtil.getInstance().addWeatherBookMark(countyName);
+            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
+            CountyChooseActivity.this.finish();
+        }
+    };
 
     private View.OnClickListener toolbarButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.toolbar_left_search:
                     finish();
                     break;
@@ -139,42 +150,38 @@ public class CountyChooseActivity extends AppCompatActivity {
         public void afterTextChanged(Editable s) {
             String str = s.toString();
 
-            if(TextUtils.isEmpty(str)){
+            if (TextUtils.isEmpty(str)) {
                 mToolbar.getSearchRightButton().setVisibility(View.INVISIBLE);
 
                 mSearchBlock.setVisibility(View.VISIBLE);
                 mNoResult.setVisibility(View.GONE);
                 mSearchedListView.setVisibility(View.GONE);
                 return;
-            }else{
+            } else {
                 mToolbar.getSearchRightButton().setVisibility(View.VISIBLE);
                 mSearchBlock.setVisibility(View.GONE);
                 mNoResult.setVisibility(View.GONE);
                 mSearchedListView.setVisibility(View.VISIBLE);
             }
 
-            List<County> counties = DatabaseUtil.getInstance().getAllCountyNameLike(str);
-            if(counties != null && counties.size() > 0){
+            final List<County> counties = DatabaseUtil.getInstance().getAllCountyNameLike(str);
+            if (counties != null && counties.size() > 0) {
                 mSearchedListView.setVisibility(View.VISIBLE);
                 mNoResult.setVisibility(View.GONE);
 
-                Log.d(TAG, "afterTextChanged: counties size" + counties.size());
                 mSearchResultList.clear();
                 String cityName, provinceName;
                 String result = "";
-                for(County county : counties){
-                    Log.d(TAG, "afterTextChanged: county: " + county.getName());
-//                    result = county.getName();
-//                    cityName = county.getCity().getName();
-//                    provinceName = county.getCity().getProvince().getName();
-//
-//                    if(!result.equals(cityName)) result += " - " +cityName;
-//                    result += " - " + provinceName;
+                for (County county : counties) {
+                    result = county.getName();
+                    cityName = county.getCity().getName();
+                    provinceName = county.getCity().getProvince().getName();
+                    result += " - " + cityName;
+                    result += " , " + provinceName;
                     mSearchResultList.add(result);
                 }
-                Log.d(TAG, "afterTextChanged: size " + mSearchResultList.size());
                 mSearchedAdapter.notifyDataSetChanged();
-            }else{
+            } else {
                 mSearchedListView.setVisibility(View.GONE);
                 mNoResult.setVisibility(View.VISIBLE);
             }
@@ -363,10 +370,10 @@ public class CountyChooseActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == RECORD_AUDIO_CODE){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == RECORD_AUDIO_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 doSpeedUnderstand();
-            }else{
+            } else {
                 showTip("未获得录音权限，不能执行语音搜索操作");
             }
         }
