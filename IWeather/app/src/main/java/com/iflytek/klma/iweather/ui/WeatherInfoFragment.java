@@ -115,9 +115,13 @@ public class WeatherInfoFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
+        //当前bookmarkId无效，且savedBundle有信息，则取出saved bookmarkId
+        if (DatabaseUtil.getInstance().getWeatherBookmarkById(bookmarkId) == null && savedInstanceState != null) {
             int id = savedInstanceState.getInt("id", -1);
-            if (id != -1) mBookmarkId = id;
+            //如果取出的bookmarkId有用，才使用它
+            if (DatabaseUtil.getInstance().getWeatherBookmarkById(id) != null){
+                    bookmarkId = id;
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -165,7 +166,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public static IflyWeather handleIflyWeatherJson(String json) {
+        IflyWeather weather = new Gson().fromJson(json, IflyWeather.class);
+        if (weather.getRc() != 0) return null;
+        return weather;
+    }
+
     private void handleUnderstanderResult(String text) {
+        Log.d(TAG, "handleUnderstanderResult: " + (handleIflyWeatherJson(text) == null));
         IflyWeather weather = GsonUtil.handleIflyWeatherData(text);
         if (weather != null) {
             String outstr = weather.getAnswer().getText() + "\n\n" +
@@ -189,11 +197,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setSpeechUnderstanderParams() {
+        // 设置语言
         speechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+        // 设置语言区域
         speechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
-
-        speechUnderstander.setParameter(SpeechConstant.VAD_BOS, "4000");
+        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
+        speechUnderstander.setParameter(SpeechConstant.VAD_BOS, "1000");
+        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
         speechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
+        // 设置标点符号，默认：1（有标点）
         speechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
 
         speechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");

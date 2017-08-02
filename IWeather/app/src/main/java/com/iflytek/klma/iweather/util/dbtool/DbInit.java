@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.iflytek.klma.iweather.db.County;
 
+import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class DbInit {
             "合肥","深圳","南京","西安","无锡","常州","苏州","杭州",
             "宁波","济南","青岛","福州","厦门","成都","昆明"};
 
-    public static void testDb(){
+    public static void makeHotCity(){
 //        List<County> counties = DataSupport.where("name = ?", "昆明").find(County.class);
 //        for(County c : counties){
 //            Log.d(TAG, c.getName() + " " + c.getWeatherId());
@@ -64,6 +65,7 @@ public class DbInit {
      * 使用和风天气api，获取城市列表，创建数据库
      */
     public static void initCityDb(){
+        LitePal.getDatabase();
         new Thread(new Runnable() {
             @Override
             public void run() {
