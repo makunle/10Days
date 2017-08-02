@@ -3,10 +3,7 @@ package com.iflytek.klma.iweather.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.Toast;
 
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.County;
-import com.iflytek.klma.iweather.db.WeatherBookmark;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 
 import java.util.List;
@@ -30,20 +26,20 @@ public class HotCountyAdapter extends RecyclerView.Adapter<HotCountyAdapter.MVie
 
     private static final String TAG = "IWeather";
 
+    private List<County> mCounties;
+
     static class MViewHolder extends RecyclerView.ViewHolder{
 
         Button btnCountyName;
-
         public MViewHolder(View itemView) {
             super(itemView);
             btnCountyName = (Button) itemView.findViewById(R.id.county_name_item);
         }
+
     }
 
-    private List<County> counties;
-
     public HotCountyAdapter(List<County> counties){
-        this.counties = counties;
+        mCounties = counties;
     }
 
     @Override
@@ -52,7 +48,7 @@ public class HotCountyAdapter extends RecyclerView.Adapter<HotCountyAdapter.MVie
             context = parent.getContext();
         }
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hot_county_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_hot_county, parent, false);
         final MViewHolder viewHolder = new MViewHolder(view);
 
         /***
@@ -62,7 +58,7 @@ public class HotCountyAdapter extends RecyclerView.Adapter<HotCountyAdapter.MVie
             @Override
             public void onClick(View v) {
                 int position = viewHolder.getAdapterPosition();
-                County county = counties.get(position);
+                County county = mCounties.get(position);
                 if(DatabaseUtil.getInstance().addWeatherBookMark(county.getName())){
                     Intent intent = new Intent(context, WeatherShowActivity.class);
                     context.startActivity(intent);
@@ -78,13 +74,13 @@ public class HotCountyAdapter extends RecyclerView.Adapter<HotCountyAdapter.MVie
 
     @Override
     public void onBindViewHolder(MViewHolder holder, int position) {
-        County county = counties.get(position);
+        County county = mCounties.get(position);
         holder.btnCountyName.setText(county.getName());
     }
 
     @Override
     public int getItemCount() {
-        return counties.size();
+        return mCounties.size();
     }
 
 

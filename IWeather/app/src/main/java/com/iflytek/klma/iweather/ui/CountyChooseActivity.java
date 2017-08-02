@@ -10,11 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
@@ -28,15 +29,12 @@ import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.klma.iweather.R;
-import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.gson.IflyWeather;
 import com.iflytek.klma.iweather.util.AndroidUtil;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
 
 import org.json.JSONObject;
-
-import static com.iflytek.klma.iweather.R.id.btn_search;
 
 /**
  * 天气选择界面，包括
@@ -47,15 +45,16 @@ import static com.iflytek.klma.iweather.R.id.btn_search;
 
 public class CountyChooseActivity extends AppCompatActivity {
 
-    private static final String TAG = "IWeather";
+    private static final String TAG = "CountyChooseActivity";
     private static final int RECORD_AUDIO_CODE = 1;
 
-    private EditText etCityInput;    //城市查询输入框
-    private Button btnSearch;        //城市搜索按钮
-    private Button btnSpeechSearch;  //语音搜索按钮
-    private RecyclerView rvCountyList;   //城市列表
+//    private EditText mCityInputEt;    //城市查询输入框
+//    private Button mSearchBtn;        //城市搜索按钮
+    private Button mSpeechSearchBtn;  //语音搜索按钮
+    private RecyclerView mCountyListRv;   //城市列表
+    private MyToolbar mToolbar;
 
-    private SpeechUnderstander speechUnderstander;  //语音搜索理解器
+    private SpeechUnderstander mSpeechUnderstander;  //语音搜索理解器
     private RecognizerDialog recognizerDialog;
 
     private Toast toast;
@@ -65,25 +64,62 @@ public class CountyChooseActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.county_choose);
-        etCityInput = (EditText) findViewById(R.id.et_city_input);
-        btnSearch = (Button) findViewById(btn_search);
-        btnSpeechSearch = (Button) findViewById(R.id.btn_speech_search);
-        rvCountyList = (RecyclerView) findViewById(R.id.rv_city_list);
+//        mCityInputEt = (EditText) findViewById(R.id.et_city_input);
+//        mSearchBtn = (Button) findViewById(btn_search);
+        mSpeechSearchBtn = (Button) findViewById(R.id.btn_speech_search);
+        mCountyListRv = (RecyclerView) findViewById(R.id.rv_city_list);
+        mToolbar = (MyToolbar) findViewById(R.id.toolbar);
 
         //热门城市列表，使用RecyclerView的瀑布布局方式展现
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(5, StaggeredGridLayoutManager.VERTICAL);
-        rvCountyList.setLayoutManager(layoutManager);
+        mCountyListRv.setLayoutManager(layoutManager);
         HotCountyAdapter adapter = new HotCountyAdapter(DatabaseUtil.getInstance().getHotCounties());
-        rvCountyList.setAdapter(adapter);
+        mCountyListRv.setAdapter(adapter);
 
-        speechUnderstander = SpeechUnderstander.createUnderstander(this, initListener);
+        mSpeechUnderstander = SpeechUnderstander.createUnderstander(this, initListener);
         recognizerDialog = new RecognizerDialog(this, initListener);
 
         toast = Toast.makeText(CountyChooseActivity.this, "", Toast.LENGTH_SHORT);
 
-        btnSearch.setOnClickListener(searchOnClickListener);
-        btnSpeechSearch.setOnClickListener(searchOnClickListener);
+//        mSearchBtn.setOnClickListener(searchOnClickListener);
+        mSpeechSearchBtn.setOnClickListener(searchOnClickListener);
+
+        mToolbar.getInputEditText().addTextChangedListener(texInputWatcher);
+        mToolbar.getSearchLeftButton().setOnClickListener(toolbarButtonClickListener);
+        mToolbar.getSearchRightButton().setOnClickListener(toolbarButtonClickListener);
+
     }
+
+    private View.OnClickListener toolbarButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.toolbar_left_search:
+                    finish();
+                    break;
+                case R.id.toolbar_right_search:
+                    mToolbar.getInputEditText().setText("");
+                    break;
+            }
+        }
+    };
+    /**
+     * 搜索框文字改变事件响应
+     */
+    private TextWatcher texInputWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            Log.d(TAG, "afterTextChanged: " + s.toString());
+        }
+    };
 
     private void showTip(String msg) {
         toast.setText(msg);
@@ -93,9 +129,9 @@ public class CountyChooseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (speechUnderstander != null) {
-            speechUnderstander.cancel();
-            speechUnderstander.destroy();
+        if (mSpeechUnderstander != null) {
+            mSpeechUnderstander.cancel();
+            mSpeechUnderstander.destroy();
         }
     }
 
@@ -106,20 +142,20 @@ public class CountyChooseActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btn_search:
-                    String input = etCityInput.getText().toString();
-                    if (!TextUtils.isEmpty(input)) {
-                        County county = DatabaseUtil.getInstance().getCountyByName(input);
-                        if (county != null) {
-                            DatabaseUtil.getInstance().addWeatherBookMark(input);
-                            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
-                            return;
-                        }
-                    }
-                    Toast.makeText(CountyChooseActivity.this, "输入的城市名不正确", Toast.LENGTH_SHORT).show();
-                    break;
+//                case R.id.btn_search:
+//                    String input = mCityInputEt.getText().toString();
+//                    if (!TextUtils.isEmpty(input)) {
+//                        County county = DatabaseUtil.getInstance().getCountyByName(input);
+//                        if (county != null) {
+//                            DatabaseUtil.getInstance().addWeatherBookMark(input);
+//                            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
+//                            return;
+//                        }
+//                    }
+//                    Toast.makeText(CountyChooseActivity.this, "输入的城市名不正确", Toast.LENGTH_SHORT).show();
+//                    break;
                 case R.id.btn_speech_search:
-                    if (null == speechUnderstander) {
+                    if (null == mSpeechUnderstander) {
                         // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
                         showTip("创建对象失败，请确认 libmsc.so 放置正确，且有调用 " +
                                 "createUtility 进行初始化");
@@ -135,13 +171,13 @@ public class CountyChooseActivity extends AppCompatActivity {
 
     private void doSpeedUnderstand() {
         setSpeechUnderstanderParams();
-        if (speechUnderstander.isUnderstanding()) {
-            speechUnderstander.stopUnderstanding();
+        if (mSpeechUnderstander.isUnderstanding()) {
+            mSpeechUnderstander.stopUnderstanding();
             showTip("停止录音");
         } else {
 //                        recognizerDialog.setListener(mRecognizerDialogListener);
 //                        recognizerDialog.show();
-            int ret = speechUnderstander.startUnderstanding(speechUnderstanderListener);
+            int ret = mSpeechUnderstander.startUnderstanding(speechUnderstanderListener);
 //                        int ret = 1;
             if (ret != 0) {
                 showTip("语义理解失败，错误码：" + ret);
@@ -233,18 +269,18 @@ public class CountyChooseActivity extends AppCompatActivity {
      */
     private void setSpeechUnderstanderParams() {
         // 设置语言
-        speechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+        mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
         // 设置语言区域
-        speechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
+        mSpeechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
         // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        speechUnderstander.setParameter(SpeechConstant.VAD_BOS, "1000");
+        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, "1000");
         // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
-        speechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
+        mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
         // 设置标点符号，默认：1（有标点）
-        speechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
 
-        speechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        speechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState() + "/msc/sud.wav");
+        mSpeechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState() + "/msc/sud.wav");
 
     }
 

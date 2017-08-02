@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="0dp"
+    android:id="@+id/container">
+
+    <com.iflytek.klma.iweather.ui.MyToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        app:leftBackground="@drawable/toolbar_back_arrow"
+        app:rightBackground="@drawable/toolbar_add"
+        app:title="收藏列表"
+        app:titleType="normal"
+        android:layout_height="50dp"/>
+
+    <ListView
+        android:id="@+id/bookmark_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

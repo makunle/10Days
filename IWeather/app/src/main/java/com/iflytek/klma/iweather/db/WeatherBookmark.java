@@ -4,6 +4,7 @@ import android.icu.text.SimpleDateFormat;
 import android.text.format.DateUtils;
 
 import com.iflytek.klma.iweather.util.DatabaseUtil;
+import com.iflytek.klma.iweather.util.dbtool.Util;
 
 import org.litepal.LitePal;
 import org.litepal.annotation.Column;
@@ -65,19 +66,14 @@ public class WeatherBookmark extends DataSupport{
         return new Date(updateTime);
     }
 
-    /**
-     * 更新时间 获取到的格式为"2017-07-30 13:49"，需转换为long
-     * @param updateTime
-     */
-    public void setUpdateTime(String updateTime) {
-        java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            java.util.Date date = format.parse(updateTime);
-            this.updateTime = date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     * 更新时间 获取到的格式为"2017-07-30 13:49"，需转换为long
+//     * @param updateTime
+//     */
+//    public void setUpdateTime(long updateTime) {
+//        this.updateTime = updateTime
+//    }
+
     public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }

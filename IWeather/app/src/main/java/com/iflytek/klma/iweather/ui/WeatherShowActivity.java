@@ -2,18 +2,14 @@ package com.iflytek.klma.iweather.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.iflytek.klma.iweather.R;
@@ -23,6 +19,7 @@ import com.iflytek.klma.iweather.util.DBChangeMsg;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.HttpUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
+import com.iflytek.klma.iweather.util.dbtool.Util;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,30 +35,30 @@ public class WeatherShowActivity extends AppCompatActivity {
     private static final String URL = "http://guolin.tech/api/weather?cityid=";
     private static final String KEY = "7decd6786b9e47ba806484d665f685e6";
 
-    private List<WeatherInfoFragment> weatherInfoPages = new ArrayList<WeatherInfoFragment>();
+    private List<WeatherInfoFragment> mWeatherInfoPages = new ArrayList<WeatherInfoFragment>();
 
-    private TextView countyName;
-    private TextView showTime;
-    private ViewPager pageContainer;
-    private VerticalSwipeRefreshLayout swipeRefresh;
+    private TextView mShowTimeTv;
+    private ViewPager mPageContainer;
+    private VerticalSwipeRefreshLayout mSwipeRefresh;
+    private MyToolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
-        countyName = (TextView) findViewById(R.id.county_name);
-        showTime = (TextView) findViewById(R.id.show_time);
-        pageContainer = (ViewPager) findViewById(R.id.view_page);
-        swipeRefresh = (VerticalSwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mShowTimeTv = (TextView) findViewById(R.id.show_time);
+        mPageContainer = (ViewPager) findViewById(R.id.view_page);
+        mSwipeRefresh = (VerticalSwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mToolbar = (MyToolbar) findViewById(R.id.toolbar);
 
-        findViewById(R.id.setting).setOnClickListener(new View.OnClickListener() {
+        mToolbar.getNormalRightButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(WeatherShowActivity.this, SettingActivity.class));
+                startActivity(new Intent(WeatherShowActivity.this, BookmarkSettingActivity.class));
             }
         });
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshAllPages();
@@ -92,26 +89,26 @@ public class WeatherShowActivity extends AppCompatActivity {
             case DBChangeMsg.ADD:
                 WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookmarkById(msg.getBookMarkId());
                 WeatherInfoFragment fragment = new WeatherInfoFragment();
-                fragment.setBookmarkId(msg.getBookMarkId());
-                weatherInfoPages.add(fragment);
+                fragment.setmBookmarkId(msg.getBookMarkId());
+                mWeatherInfoPages.add(fragment);
 
                 break;
             case DBChangeMsg.DEL:
-                for (int i = 0; i < weatherInfoPages.size(); i++) {
-                    if (weatherInfoPages.get(i).getBookmarkId() == msg.getBookMarkId()) {
-                        weatherInfoPages.remove(i);
+                for (int i = 0; i < mWeatherInfoPages.size(); i++) {
+                    if (mWeatherInfoPages.get(i).getmBookmarkId() == msg.getBookMarkId()) {
+                        mWeatherInfoPages.remove(i);
                         break;
                     }
                 }
                 break;
         }
         //更新WeatherBookmark的showOrder
-        for (int i = 0; i < weatherInfoPages.size(); i++) {
-            DatabaseUtil.getInstance().updateWeatherBookMarkShowOrder(weatherInfoPages.get(i).getBookmarkId(), i + 1);
+        for (int i = 0; i < mWeatherInfoPages.size(); i++) {
+            DatabaseUtil.getInstance().updateWeatherBookMarkShowOrder(mWeatherInfoPages.get(i).getmBookmarkId(), i + 1);
         }
 
         pagerAdapter.notifyDataSetChanged();
-        pageContainer.setCurrentItem(weatherInfoPages.size());
+        mPageContainer.setCurrentItem(mWeatherInfoPages.size());
         refreshOnlyIfNeed();
     }
 
@@ -122,17 +119,18 @@ public class WeatherShowActivity extends AppCompatActivity {
         List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
         for (WeatherBookmark bookmark : bookmarks) {
             WeatherInfoFragment fragment = new WeatherInfoFragment();
-            fragment.setBookmarkId(bookmark.getId());
-            weatherInfoPages.add(fragment);
+            fragment.setmBookmarkId(bookmark.getId());
+            mWeatherInfoPages.add(fragment);
         }
 
-        pageContainer.setAdapter(pagerAdapter);
-        pageContainer.addOnPageChangeListener(pageChangeListener);
+        mPageContainer.setAdapter(pagerAdapter);
+        mPageContainer.addOnPageChangeListener(pageChangeListener);
 
         int currentItem = bookmarks.size() - 1;
-        pageContainer.setCurrentItem(currentItem);
-        countyName.setText(bookmarks.get(currentItem).getCounty().getName());
-        showTime.setText("--" + (currentItem) + "--");
+        mPageContainer.setCurrentItem(currentItem);
+        mShowTimeTv.setText("--" + (currentItem) + "--");
+
+        mToolbar.setTitle(bookmarks.get(currentItem).getCounty().getName());
     }
 
     /**
@@ -140,8 +138,8 @@ public class WeatherShowActivity extends AppCompatActivity {
      */
     private void refreshAllPages() {
         List<Integer> updateList = new ArrayList<Integer>();
-        for (WeatherInfoFragment wf : weatherInfoPages) {
-            updateList.add(wf.getBookmarkId());
+        for (WeatherInfoFragment wf : mWeatherInfoPages) {
+            updateList.add(wf.getmBookmarkId());
         }
         requestWeatherDataAndRefresh(updateList);
     }
@@ -161,12 +159,12 @@ public class WeatherShowActivity extends AppCompatActivity {
     private FragmentStatePagerAdapter pagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
         @Override
         public Fragment getItem(int position) {
-            return weatherInfoPages.get(position);
+            return mWeatherInfoPages.get(position);
         }
 
         @Override
         public int getCount() {
-            return weatherInfoPages.size();
+            return mWeatherInfoPages.size();
         }
 
         @Override
@@ -185,10 +183,11 @@ public class WeatherShowActivity extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-            int bookmarkId = weatherInfoPages.get(position).getBookmarkId();
+            int bookmarkId = mWeatherInfoPages.get(position).getmBookmarkId();
             String name = DatabaseUtil.getInstance().getCountyByBookmarkId(bookmarkId).getName();
-            countyName.setText(name);
-            showTime.setText("--" + position + "--");
+            mShowTimeTv.setText("--" + position + "--");
+
+            mToolbar.setTitle(name);
         }
 
         @Override
@@ -201,7 +200,7 @@ public class WeatherShowActivity extends AppCompatActivity {
      */
     private void requestWeatherDataAndRefresh(final List<Integer> updateIdList) {
 
-        swipeRefresh.setRefreshing(true);
+        mSwipeRefresh.setRefreshing(true);
 
         new Thread(new Runnable() {
             @Override
@@ -214,7 +213,7 @@ public class WeatherShowActivity extends AppCompatActivity {
                     if (!TextUtils.isEmpty(json)) {
                         HefengWeather weather = JsonUtil.handleHefengJson(json);
                         wb.setWeatherData(json);
-                        wb.setUpdateTime(weather.getUpdateTime());
+                        wb.setUpdateTime(Util.stringTime2long(weather.getUpdateTime()));
                         wb.save();
                     }
                 }
@@ -222,7 +221,7 @@ public class WeatherShowActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         showDataToPages();
-                        swipeRefresh.setRefreshing(false);
+                        mSwipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -235,7 +234,7 @@ public class WeatherShowActivity extends AppCompatActivity {
      * 数据库内数据得到更新后，将更新刷新到界面上
      */
     private void showDataToPages() {
-        for (WeatherInfoFragment wf : weatherInfoPages) {
+        for (WeatherInfoFragment wf : mWeatherInfoPages) {
             if (wf.isViewCreated()) wf.refreshView();
         }
     }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <!--android:background="#3495bf"-->
+
+    <LinearLayout
+        android:id="@+id/toolbar_type_normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/toolbar_left_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/toolbar_back_arrow"
+            android:scaleType="centerInside"
+            android:scaleX="0.8"
+            android:scaleY="0.8" />
+
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="标题"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+
+        <ImageButton
+            android:id="@+id/toolbar_right_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/toolbar_setting"
+            android:scaleType="centerInside"
+            android:scaleX="0.8"
+            android:scaleY="0.8" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/toolbar_type_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="9dp"
+        android:background="#fff"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/toolbar_left_search"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:background="#fff"
+            android:scaleType="centerInside"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:src="@drawable/toolbar_back_black" />
+
+        <EditText
+            android:id="@+id/toolbar_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="6dp"
+            android:layout_weight="1"
+            android:background="#fff"
+            android:hint="查询"
+            android:textColorHint="#7cced7"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/toolbar_right_search"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:paddingRight="5dp"
+            android:background="#fff"
+            android:scaleType="centerInside"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:src="@drawable/toobar_close_dark" />
+
+    </LinearLayout>
+
+</LinearLayout>

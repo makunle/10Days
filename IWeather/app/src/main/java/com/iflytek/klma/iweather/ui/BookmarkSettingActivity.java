@@ -3,7 +3,6 @@ package com.iflytek.klma.iweather.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,35 +18,39 @@ import com.iflytek.klma.iweather.util.DatabaseUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingActivity extends AppCompatActivity {
+public class BookmarkSettingActivity extends AppCompatActivity {
     private static final String TAG = "IWeather";
+    private static final int ITEM_DELETE = 0;
+    private static final int ITEM_ALARM = 1;
 
-    private ListView bookmarkList;
-    private List<String> countyNameList = new ArrayList<String>();
+
+    private ListView mBookmarkList;
+    private List<String> mCountyNameList = new ArrayList<String>();
+    private MyToolbar mToolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);
+        setContentView(R.layout.activity_bookmark_setting);
 
-        bookmarkList = (ListView) findViewById(R.id.bookmark_list);
-
-        findViewById(R.id.back).setOnClickListener(clickListener);
-        findViewById(R.id.add).setOnClickListener(clickListener);
+        mBookmarkList = (ListView) findViewById(R.id.bookmark_list);
 
         List<WeatherBookmark> weatherBookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
         for (WeatherBookmark wb : weatherBookmarks){
-            countyNameList.add(wb.getCounty().getName());
+            mCountyNameList.add(wb.getCounty().getName());
         }
-        bookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, countyNameList));
-        bookmarkList.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+        mBookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList));
+        mBookmarkList.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 0, 0, "删除");
-                menu.add(0, 0, 0, "提醒");
+                menu.add(0, ITEM_DELETE, 0, "删除");
+                menu.add(0, ITEM_ALARM, 0, "提醒");
             }
         });
 
+        mToolBar = (MyToolbar) findViewById(R.id.toolbar);
+        mToolBar.getNormalRightButton().setOnClickListener(clickListener);
+        mToolBar.getNormalLeftButton().setOnClickListener(clickListener);
     }
 
     /**
@@ -60,17 +63,19 @@ public class SettingActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         String countyName = ((TextView)info.targetView).getText().toString();
         switch (item.getItemId()){
-            case 0:   //删除
+            case ITEM_DELETE:   //删除
                 DatabaseUtil.getInstance().deleteWeatherBookMarkByCountyName(countyName);
-                for (int i = 0; i < countyNameList.size(); i++) {
-                    if(countyName.equals(countyNameList.get(i))){
-                        countyNameList.remove(i);
+                for (int i = 0; i < mCountyNameList.size(); i++) {
+                    if(countyName.equals(mCountyNameList.get(i))){
+                        mCountyNameList.remove(i);
                         break;
                     }
                 }
-                bookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, countyNameList));
+                mBookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList));
                 break;
-            case 1:   //设置提醒
+            case ITEM_ALARM:   //设置提醒
+                WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookMarkByCountyName(countyName);
+                AlarmSettingActivity.startMe(BookmarkSettingActivity.this, bookmark.getId());
                 break;
             default:
         }
@@ -84,11 +89,11 @@ public class SettingActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.back:
+                case R.id.toolbar_left_normal:
                     finish();
                     break;
-                case R.id.add:
-                    startActivity(new Intent(SettingActivity.this, CountyChooseActivity.class));
+                case R.id.toolbar_right_normal:
+                    startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
                     break;
                 default:
             }

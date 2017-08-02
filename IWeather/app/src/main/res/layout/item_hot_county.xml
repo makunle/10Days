@@ -6,10 +6,10 @@
 
     <Button
         android:id="@+id/county_name_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
         android:layout_margin="3dp"
-        android:paddingTop="3dp"
+        android:gravity="center"
         android:background="#fff"
-        android:textSize="15sp" />
+        android:textSize="12sp" />
 </LinearLayout>

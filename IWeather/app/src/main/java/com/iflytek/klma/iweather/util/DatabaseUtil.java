@@ -3,7 +3,10 @@ package com.iflytek.klma.iweather.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.iflytek.klma.iweather.db.Alarm;
 import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
 
@@ -112,7 +115,7 @@ public class DatabaseUtil {
 
     /**
      * * 添加一个新的County天气收藏
-     *
+     * @post DBChangeMsg
      * @param countyName
      * @return 是否添加成功
      */
@@ -150,6 +153,7 @@ public class DatabaseUtil {
 
     /**
      * 根据县名获取数据库县对象
+     *
      * @param countyName
      * @return 如果为null表示未获取到
      */
@@ -190,6 +194,12 @@ public class DatabaseUtil {
         return wb.getCounty();
     }
 
+    /**
+     * 通过id获取WeatherBookMark
+     * @param id
+     * @return @Nullable
+     */
+    @Nullable
     public WeatherBookmark getWeatherBookmarkById(int id) {
         return DataSupport.where("id = ?", String.valueOf(id)).findFirst(WeatherBookmark.class);
     }
@@ -206,6 +216,44 @@ public class DatabaseUtil {
         bookmark.delete();
 
         EventBus.getDefault().post(new DBChangeMsg(bookmark.getId(), DBChangeMsg.DEL));
+        return true;
+    }
+
+    public List<Alarm> getAllAlarmByWeatherBookmarkId(int bookmarkId) {
+        return DataSupport.where("weatherBookmarkId = ?", String.valueOf(bookmarkId)).order("alarmTime asc").find(Alarm.class);
+    }
+
+    /**
+     * 添加一个alarm事件到数据库
+     * @post AlarmChangeMsg
+     * @param alarmTime
+     * @param bookmarkId
+     * @return
+     */
+    public boolean addAlarm(long alarmTime, int bookmarkId) {
+        if(getWeatherBookmarkById(bookmarkId) == null) return false;
+        if(alarmTime < new Date().getTime()) return false;
+
+        Alarm alarm = new Alarm();
+        alarm.setAlarmTime(alarmTime);
+        alarm.setWeatherBookmarkId(bookmarkId);
+        alarm.save();
+
+        AlarmChangeMsg changeMsg = new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.ADD, alarm.getAlarmTime());
+        EventBus.getDefault().post(changeMsg);
+        return true;
+    }
+
+    /**
+     * 通过id删除一个alarm
+     * @param alarmId
+     * @return
+     */
+    public boolean deleteAlarmById(int alarmId){
+        Alarm alarm = DataSupport.where("id = ?", String.valueOf(alarmId)).findFirst(Alarm.class);
+        if(alarm == null) return false;
+        alarm.delete();
+        EventBus.getDefault().post(new AlarmChangeMsg(alarmId, AlarmChangeMsg.DEL, alarm.getAlarmTime()));
         return true;
     }
 }

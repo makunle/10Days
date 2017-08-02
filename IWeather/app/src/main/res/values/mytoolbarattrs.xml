@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyToolbar">
+        <attr name="leftBackground" format="reference" />
+        <attr name="rightBackground" format="reference" />
+        <attr name="title" format="string" />
+        <attr name="showLeftButton" format="boolean" />
+        <attr name="showRightButton" format="boolean" />
+        <attr name="inputTextHint" format="string"/>
+        <attr name="titleType">
+            <enum name="normal" value="0" />
+            <enum name="search" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>
