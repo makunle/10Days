@@ -32,7 +32,7 @@ public class WeatherInfoFragment extends Fragment {
     private TextView mWindDirect;
     private TextView mWindLevel;
 
-    private View view;
+    private View mView;
 
     public WeatherInfoFragment() {
     }
@@ -48,17 +48,17 @@ public class WeatherInfoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (view == null) {
-            view = inflater.inflate(R.layout.weather_info, container, false);
-            mWeatherInfo = (TextView) view.findViewById(R.id.weather_info);
-            mNowTemperature = (TextView) view.findViewById(R.id.now_temperature);
-            mMinTemperature = (TextView) view.findViewById(R.id.min_temperature);
-            mMaxTemperature = (TextView) view.findViewById(R.id.max_temperature);
-            mWindDirect = (TextView) view.findViewById(R.id.wind_direct);
-            mWindLevel = (TextView) view.findViewById(R.id.wind_level);
+        if (mView == null) {
+            mView = inflater.inflate(R.layout.weather_info, container, false);
+            mWeatherInfo = (TextView) mView.findViewById(R.id.weather_info);
+            mNowTemperature = (TextView) mView.findViewById(R.id.now_temperature);
+            mMinTemperature = (TextView) mView.findViewById(R.id.min_temperature);
+            mMaxTemperature = (TextView) mView.findViewById(R.id.max_temperature);
+            mWindDirect = (TextView) mView.findViewById(R.id.wind_direct);
+            mWindLevel = (TextView) mView.findViewById(R.id.wind_level);
         }
         Log.d(TAG, "onCreateView: Fragment" + mBookmarkId + " " + (mWeatherInfo == null) + " " + mBookmarkId);
-        return view;
+        return mView;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class WeatherInfoFragment extends Fragment {
     }
 
     public boolean isViewCreated() {
-        return view != null;
+        return mView != null;
     }
 
     public void refreshView() {
@@ -104,6 +104,7 @@ public class WeatherInfoFragment extends Fragment {
 
     /**
      * 销毁前保存bookmarkId，之后加载时读取，解决旋转屏幕无信息问题
+     *
      * @param outState
      */
     @Override
@@ -116,11 +117,11 @@ public class WeatherInfoFragment extends Fragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         //当前bookmarkId无效，且savedBundle有信息，则取出saved bookmarkId
-        if (DatabaseUtil.getInstance().getWeatherBookmarkById(bookmarkId) == null && savedInstanceState != null) {
+        if (DatabaseUtil.getInstance().getWeatherBookmarkById(mBookmarkId) == null && savedInstanceState != null) {
             int id = savedInstanceState.getInt("id", -1);
             //如果取出的bookmarkId有用，才使用它
-            if (DatabaseUtil.getInstance().getWeatherBookmarkById(id) != null){
-                    bookmarkId = id;
+            if (DatabaseUtil.getInstance().getWeatherBookmarkById(id) != null) {
+                mBookmarkId = id;
             }
         }
     }

@@ -15,7 +15,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iflytek.cloud.ErrorCode;
@@ -29,12 +33,16 @@ import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.klma.iweather.R;
+import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.gson.IflyWeather;
 import com.iflytek.klma.iweather.util.AndroidUtil;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 天气选择界面，包括
@@ -53,22 +61,31 @@ public class CountyChooseActivity extends AppCompatActivity {
     private Button mSpeechSearchBtn;  //语音搜索按钮
     private RecyclerView mCountyListRv;   //城市列表
     private MyToolbar mToolbar;
+    private ListView mSearchedListView;
+    private LinearLayout mNoResult;
+    private LinearLayout mSearchBlock;
 
     private SpeechUnderstander mSpeechUnderstander;  //语音搜索理解器
     private RecognizerDialog recognizerDialog;
 
     private Toast toast;
 
+    private List<String> mSearchResultList = new ArrayList<>();
+    private ArrayAdapter<String> mSearchedAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.county_choose);
+        setContentView(R.layout.activity_county_choose);
 //        mCityInputEt = (EditText) findViewById(R.id.et_city_input);
 //        mSearchBtn = (Button) findViewById(btn_search);
         mSpeechSearchBtn = (Button) findViewById(R.id.btn_speech_search);
         mCountyListRv = (RecyclerView) findViewById(R.id.rv_city_list);
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
+        mSearchedListView = (ListView) findViewById(R.id.lv_search_result);
+        mNoResult = (LinearLayout) findViewById(R.id.no_result);
+        mSearchBlock = (LinearLayout) findViewById(R.id.search_block);
 
         //热门城市列表，使用RecyclerView的瀑布布局方式展现
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(5, StaggeredGridLayoutManager.VERTICAL);
@@ -88,6 +105,9 @@ public class CountyChooseActivity extends AppCompatActivity {
         mToolbar.getSearchLeftButton().setOnClickListener(toolbarButtonClickListener);
         mToolbar.getSearchRightButton().setOnClickListener(toolbarButtonClickListener);
 
+        mSearchResultList.add("123");
+        mSearchedAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mSearchResultList);
+        mSearchedListView.setAdapter(mSearchedAdapter);
     }
 
     private View.OnClickListener toolbarButtonClickListener = new View.OnClickListener() {
@@ -117,7 +137,47 @@ public class CountyChooseActivity extends AppCompatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            Log.d(TAG, "afterTextChanged: " + s.toString());
+            String str = s.toString();
+
+            if(TextUtils.isEmpty(str)){
+                mToolbar.getSearchRightButton().setVisibility(View.INVISIBLE);
+
+                mSearchBlock.setVisibility(View.VISIBLE);
+                mNoResult.setVisibility(View.GONE);
+                mSearchedListView.setVisibility(View.GONE);
+                return;
+            }else{
+                mToolbar.getSearchRightButton().setVisibility(View.VISIBLE);
+                mSearchBlock.setVisibility(View.GONE);
+                mNoResult.setVisibility(View.GONE);
+                mSearchedListView.setVisibility(View.VISIBLE);
+            }
+
+            List<County> counties = DatabaseUtil.getInstance().getAllCountyNameLike(str);
+            if(counties != null && counties.size() > 0){
+                mSearchedListView.setVisibility(View.VISIBLE);
+                mNoResult.setVisibility(View.GONE);
+
+                Log.d(TAG, "afterTextChanged: counties size" + counties.size());
+                mSearchResultList.clear();
+                String cityName, provinceName;
+                String result = "";
+                for(County county : counties){
+                    Log.d(TAG, "afterTextChanged: county: " + county.getName());
+//                    result = county.getName();
+//                    cityName = county.getCity().getName();
+//                    provinceName = county.getCity().getProvince().getName();
+//
+//                    if(!result.equals(cityName)) result += " - " +cityName;
+//                    result += " - " + provinceName;
+                    mSearchResultList.add(result);
+                }
+                Log.d(TAG, "afterTextChanged: size " + mSearchResultList.size());
+                mSearchedAdapter.notifyDataSetChanged();
+            }else{
+                mSearchedListView.setVisibility(View.GONE);
+                mNoResult.setVisibility(View.VISIBLE);
+            }
         }
     };
 

@@ -256,4 +256,8 @@ public class DatabaseUtil {
         EventBus.getDefault().post(new AlarmChangeMsg(alarmId, AlarmChangeMsg.DEL, alarm.getAlarmTime()));
         return true;
     }
+
+    public List<County> getAllCountyNameLike(String str) {
+        return DataSupport.where("name like '%" + str +"%'").find(County.class);
+    }
 }

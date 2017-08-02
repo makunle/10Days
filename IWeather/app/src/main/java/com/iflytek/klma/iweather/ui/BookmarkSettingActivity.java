@@ -27,6 +27,7 @@ public class BookmarkSettingActivity extends AppCompatActivity {
     private ListView mBookmarkList;
     private List<String> mCountyNameList = new ArrayList<String>();
     private MyToolbar mToolBar;
+    private ArrayAdapter<String> mBookmarkAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,9 @@ public class BookmarkSettingActivity extends AppCompatActivity {
         for (WeatherBookmark wb : weatherBookmarks){
             mCountyNameList.add(wb.getCounty().getName());
         }
-        mBookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList));
+
+        mBookmarkAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList);
+        mBookmarkList.setAdapter(mBookmarkAdapter);
         mBookmarkList.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -71,7 +74,8 @@ public class BookmarkSettingActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                mBookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList));
+//                mBookmarkList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList));
+                mBookmarkAdapter.notifyDataSetChanged();
                 break;
             case ITEM_ALARM:   //设置提醒
                 WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookMarkByCountyName(countyName);
