@@ -48,4 +48,18 @@ public interface Weather {
     public String getUpdateTime();
 
     public String getCountyName();
+
+    public boolean isDataUsable();
+
+    public String getAirQuality();
+
+    public String getPM25();
+
+    public String getComfortInfo();
+
+    public String getCarWashInfo();
+
+    public String getSportInfo();
+
+    public String getAQI();
 }

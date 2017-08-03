@@ -7,65 +7,106 @@ import java.util.List;
  * http://guolin.tech/api/weather?cityid=CN101220101&key=7decd6786b9e47ba806484d665f685e6
  */
 
-public class HefengWeather implements Weather{
+public class HefengWeather implements Weather {
 
     private List<HeWeatherBean> HeWeather;
 
     /**
      * 天气情况
+     *
      * @return 晴\多云\..
      */
-    public String getInfo(){
+    public String getInfo() {
         return HeWeather.get(0).now.cond.txt;
     }
 
     /**
      * 获取当前气温
+     *
      * @return
      */
-    public String getNowTemperature(){
+    public String getNowTemperature() {
         return HeWeather.get(0).now.tmp;
     }
 
     /**
      * 最低温度
+     *
      * @return
      */
-    public String getMinTemperature(){
+    public String getMinTemperature() {
         return HeWeather.get(0).daily_forecast.get(0).tmp.min;
     }
 
     /**
      * 最高温度
+     *
      * @return
      */
-    public String getMaxTemperature(){
+    public String getMaxTemperature() {
         return HeWeather.get(0).daily_forecast.get(0).tmp.max;
     }
 
     /**
      * 风向
+     *
      * @return
      */
-    public String getWindDirect(){
+    public String getWindDirect() {
         return HeWeather.get(0).daily_forecast.get(0).wind.dir;
     }
 
     /**
      * 风速等级
+     *
      * @return
      */
-    public String getWindLevel(){
+    public String getWindLevel() {
         return HeWeather.get(0).daily_forecast.get(0).wind.sc;
     }
 
-    public String getUpdateTime(){
-        return HeWeather.get(0).basic.update.loc;
+    public String getUpdateTime() {
+        return HeWeather.get(0).basic.update.loc.split(" ")[1];
     }
 
     @Override
     public String getCountyName() {
         return HeWeather.get(0).basic.city;
+    }
+
+    @Override
+    public boolean isDataUsable() {
+        return HeWeather.get(0).status.equals("ok");
+    }
+
+    @Override
+    public String getAirQuality() {
+        return HeWeather.get(0).aqi.city.qlty;
+    }
+
+    @Override
+    public String getPM25() {
+        return HeWeather.get(0).aqi.city.pm25;
+    }
+
+    @Override
+    public String getComfortInfo() {
+        return HeWeather.get(0).suggestion.comf.txt;
+    }
+
+    @Override
+    public String getCarWashInfo() {
+        return HeWeather.get(0).suggestion.cw.txt;
+    }
+
+    @Override
+    public String getSportInfo() {
+        return HeWeather.get(0).suggestion.sport.txt;
+    }
+
+    @Override
+    public String getAQI() {
+        return HeWeather.get(0).aqi.city.aqi;
     }
 
     public List<HeWeatherBean> getHeWeather() {
@@ -76,7 +117,7 @@ public class HefengWeather implements Weather{
         this.HeWeather = HeWeather;
     }
 
-    public boolean isStatusOk(){
+    public boolean isStatusOk() {
         return "ok".equals(HeWeather.get(0).status);
     }
 

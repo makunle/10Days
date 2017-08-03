@@ -63,6 +63,41 @@ public class IflyWeather implements Weather{
         return data.result.get(0).city;
     }
 
+    @Override
+    public boolean isDataUsable() {
+        return false;
+    }
+
+    @Override
+    public String getAirQuality() {
+        return null;
+    }
+
+    @Override
+    public String getPM25() {
+        return null;
+    }
+
+    @Override
+    public String getComfortInfo() {
+        return null;
+    }
+
+    @Override
+    public String getCarWashInfo() {
+        return null;
+    }
+
+    @Override
+    public String getSportInfo() {
+        return null;
+    }
+
+    @Override
+    public String getAQI() {
+        return null;
+    }
+
     private DataBean data;
     private int rc;
     private String service;

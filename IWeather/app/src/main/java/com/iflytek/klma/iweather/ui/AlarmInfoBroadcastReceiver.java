@@ -28,7 +28,6 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "alarm once", Toast.LENGTH_SHORT).show();
         Log.d("Alarm", "onReceive: alarm once from broadcast begin");
 
 

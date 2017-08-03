@@ -40,13 +40,12 @@ public class WeatherShowActivity extends AppCompatActivity {
     private static final String KEY = "7decd6786b9e47ba806484d665f685e6";
     public static final String COUNTY_NAME = "COUNTY_NAME";
 
-
     private List<WeatherInfoFragment> mWeatherInfoPages = new ArrayList<WeatherInfoFragment>();
 
-    private TextView mShowTimeTv;
     private ViewPager mPageContainer;
     private VerticalSwipeRefreshLayout mSwipeRefresh;
     private MyToolbar mToolbar;
+    private MyViewPagerDots mDotsPage;
 
     public static void startMe(Context context, String countyName) {
         Intent intent = new Intent(context, WeatherShowActivity.class);
@@ -58,12 +57,12 @@ public class WeatherShowActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weather);
+        setContentView(R.layout.activity_weather_show);
 
-        mShowTimeTv = (TextView) findViewById(R.id.show_time);
         mPageContainer = (ViewPager) findViewById(R.id.view_page);
         mSwipeRefresh = (VerticalSwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
+        mDotsPage = (MyViewPagerDots) findViewById(R.id.dots_page);
 
         mToolbar.getNormalRight().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,8 +82,6 @@ public class WeatherShowActivity extends AppCompatActivity {
         refreshOnlyIfNeed();
 
         EventBus.getDefault().register(this);
-
-        Toast.makeText(this, "get string extr" + getIntent().getStringExtra(COUNTY_NAME), Toast.LENGTH_SHORT).show();
 
         String countyName = getIntent().getStringExtra(COUNTY_NAME);
         if (TextUtils.isEmpty(countyName)) countyName = "";
@@ -137,8 +134,9 @@ public class WeatherShowActivity extends AppCompatActivity {
     }
 
     private void setPageToCountyByName(String countyName) {
-        final List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
-        int currentItem = Math.max(0, bookmarks.size() - 1);
+        List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
+//        int currentItem = Math.max(0, bookmarks.size() - 1);
+        int currentItem = 0;
         if (!TextUtils.isEmpty(countyName)) {
             for (int i = 0; i < bookmarks.size(); i++) {
                 if (bookmarks.get(i).getCounty().getName().equals(countyName)) {
@@ -148,9 +146,9 @@ public class WeatherShowActivity extends AppCompatActivity {
             }
         }
         mPageContainer.setCurrentItem(currentItem);
-        mShowTimeTv.setText("--" + (currentItem) + "--");
         mToolbar.setTitle(bookmarks.get(currentItem).getCounty().getName());
-        Log.d(TAG, "setPageToCountyByName: set item : " + currentItem + " " + countyName);
+        mDotsPage.setDotsNumber(bookmarks.size());
+        mDotsPage.setChoseDot(currentItem);
     }
 
     /**
