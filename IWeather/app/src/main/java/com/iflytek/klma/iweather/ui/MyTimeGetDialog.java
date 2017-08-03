@@ -12,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import com.iflytek.klma.iweather.R;
+import com.iflytek.klma.iweather.util.Util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -57,7 +58,7 @@ public class MyTimeGetDialog {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, month, dayOfMonth);
                         datetime = calendar.getTime();
-                        timebutton.setText("选择日期：" + dateFormat.format(datetime));
+                        timebutton.setText("选择日期：" + Util.getDayShow(datetime));
                     }
                 }, datetime.getYear() + 1900, datetime.getMonth(), datetime.getDay()).show();
             }
@@ -70,6 +71,7 @@ public class MyTimeGetDialog {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         datetime.setHours(hourOfDay);
                         datetime.setMinutes(minute);
+                        datetime.setSeconds(2);
                         datebutton.setText("选择时间：" + hourOfDay + ":" + minute + (hourOfDay > 12 ? " 下午" : " 上午"));
                     }
                 }, datetime.getHours(), datetime.getMinutes(), true).show();

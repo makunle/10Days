@@ -54,8 +54,20 @@ public class WeatherShowActivity extends AppCompatActivity {
         ((Activity) context).finish();
     }
 
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String countyName = intent.getStringExtra(WeatherShowActivity.COUNTY_NAME);
+        if(!TextUtils.isEmpty(countyName)){
+            setPageToCountyByName(countyName);
+            Log.d(TAG, "onNewIntent: seted");
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: WeatherShow");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_show);
 
@@ -271,7 +283,7 @@ public class WeatherShowActivity extends AppCompatActivity {
     }
 
     /**
-     * 获取需要拉取天气数据的bookmark,2小时之前的天气都需要更新
+     * 获取需要拉取天气数据的bookmark,5小时之前的天气都需要更新
      *
      * @return
      */
@@ -282,7 +294,7 @@ public class WeatherShowActivity extends AppCompatActivity {
         Date now = new Date();
         for (WeatherBookmark wb : bookmarks) {
             //最近一次更新时间在2小时以前的都需要更新
-            if (now.getTime() - wb.getUpdateTime().getTime() > 2 * 60 * 60 * 1000) {
+            if (now.getTime() - wb.getUpdateTime().getTime() > 5 * 60 * 60 * 1000) {
                 needupdate.add(wb.getId());
             }
         }

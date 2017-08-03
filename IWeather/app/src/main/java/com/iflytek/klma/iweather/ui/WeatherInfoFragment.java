@@ -16,6 +16,7 @@ import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
+import com.iflytek.klma.iweather.util.Util;
 
 /**
  * Created by makunle on 2017/7/30.
@@ -130,17 +131,9 @@ public class WeatherInfoFragment extends Fragment {
         mAirQuality.setText(weather.getAirQuality());
         mAQI.setText(weather.getAQI());
 
-        mUpdateTime.setText(weather.getUpdateTime());
+        mUpdateTime.setText(weather.getUpdateTime()+"更新");
 
-        int weatherPicRcId = R.drawable.weather_sun;
-        if(weather.getInfo().contains("雨")){
-            weatherPicRcId = R.drawable.weather_rain;
-        }else if(weather.getInfo().contains("云")){
-            weatherPicRcId = R.drawable.weather_cloud;
-        }else if(weather.getInfo().contains("雪")){
-            weatherPicRcId = R.drawable.weather_snow;
-        }
-        mWeatherPic.setImageResource(weatherPicRcId);
+        mWeatherPic.setImageResource(Util.getWeatherImageResource(weather));
 
         mMainLayout.setVisibility(View.VISIBLE);
         Log.d(TAG, "refreshView: done");

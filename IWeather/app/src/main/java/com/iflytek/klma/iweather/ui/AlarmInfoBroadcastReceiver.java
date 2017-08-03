@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -49,7 +51,9 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showIntent, 0);
         Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.i_ico)
-                .setTicker("请查看订阅的天气情况")
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.notification_weather))
+                .setWhen(System.currentTimeMillis())
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentTitle(weather.getCountyName() + "天气 "+weather.getInfo())
                 .setContentText("温度："+weather.getNowTemperature() + " "+weather.getWindDirect()+" "+weather.getWindLevel())
                 .setContentIntent(pendingIntent)

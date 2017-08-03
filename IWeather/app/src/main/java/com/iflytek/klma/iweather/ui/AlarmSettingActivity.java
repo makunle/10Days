@@ -92,13 +92,12 @@ public class AlarmSettingActivity extends AppCompatActivity {
             case AlarmChangeMsg.DEL:
                 //用于listview刷新
                 for (int i = 0; i < mAlarmItems.size(); i++) {
-
                     if(mAlarmItems.get(i).getAlarmId() == msg.getAlarmId()){
                         mAlarmItems.remove(i);
                         break;
                     }
                 }
-                //取消系统alarm
+                //取消系统alarm，在broadcastreceiver中判断，如果是已经被取消的，则不显示notification
                 break;
         }
         mAlarmItemAdapter.notifyDataSetChanged();
@@ -110,6 +109,9 @@ public class AlarmSettingActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
+    /**
+     * toolbar左右按钮事件响应
+     */
     private View.OnClickListener buttonOnClieckListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -199,7 +201,7 @@ public class AlarmSettingActivity extends AppCompatActivity {
 
         public AlarmItem(int alarmId, long time) {
             this.alarmId = alarmId;
-            this.time = Util.longTime2String(time);
+            this.time = Util.getDayShow(new Date(time));
         }
 
         public int getAlarmId() {
