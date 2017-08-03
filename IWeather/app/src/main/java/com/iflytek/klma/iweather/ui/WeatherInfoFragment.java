@@ -123,9 +123,9 @@ public class WeatherInfoFragment extends Fragment {
         mWindDirect.setText(weather.getWindDirect());
         mWindLevel.setText(weather.getWindLevel());
 
-        mSportInfo.setText(weather.getSportInfo());
-        mCarWashInfo.setText(weather.getCarWashInfo());
-        mComfortInfo.setText(weather.getComfortInfo());
+        mSportInfo.setText("运动建议："+weather.getSportInfo());
+        mCarWashInfo.setText("洗车建议："+weather.getCarWashInfo());
+        mComfortInfo.setText("舒适度："+weather.getComfortInfo());
         mPM25.setText(weather.getPM25());
         mAirQuality.setText(weather.getAirQuality());
         mAQI.setText(weather.getAQI());

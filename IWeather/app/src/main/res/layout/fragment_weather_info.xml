@@ -3,7 +3,7 @@
     android:id="@+id/weather_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#c8dcdcdc"
+    android:background="@drawable/bk"
     android:orientation="vertical">
 
     <android.support.v4.widget.NestedScrollView
@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="#c86cce86"
+                android:background="#966cce86"
                 android:gravity="left|center_vertical"
                 android:orientation="horizontal">
 
@@ -142,7 +142,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="#c8b175f5"
+                android:background="#77b175f5"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -194,8 +194,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:background="#96759ee9"
                 android:gravity="center_vertical"
-                android:background="#c8759ee9"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -281,10 +281,10 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_marginRight="20dp"
-                        android:background="@drawable/weather_wind"
                         android:layout_width="60dp"
-                        android:layout_height="60dp" />
+                        android:layout_height="60dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/weather_wind" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -293,7 +293,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:background="#c8e2e28f"
+                android:background="#962d9ea7"
                 android:orientation="vertical">
 
                 <FrameLayout
@@ -303,14 +303,15 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="bottom|right">
+                        android:gravity="top|left">
 
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="100dp"
-                            android:background="@drawable/weather_pic_1" />
+                            android:src="@drawable/weather_pic_1" />
 
                     </LinearLayout>
+
 
                     <LinearLayout
                         android:layout_width="match_parent"

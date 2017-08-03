@@ -48,7 +48,7 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
         showIntent.putExtra(WeatherShowActivity.COUNTY_NAME, weather.getCountyName());
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showIntent, 0);
         Notification notification = new Notification.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.i_ico)
                 .setTicker("请查看订阅的天气情况")
                 .setContentTitle(weather.getCountyName() + "天气 "+weather.getInfo())
                 .setContentText("温度："+weather.getNowTemperature() + " "+weather.getWindDirect()+" "+weather.getWindLevel())

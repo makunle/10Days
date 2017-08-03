@@ -135,8 +135,8 @@ public class WeatherShowActivity extends AppCompatActivity {
 
     private void setPageToCountyByName(String countyName) {
         List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
-//        int currentItem = Math.max(0, bookmarks.size() - 1);
-        int currentItem = 0;
+        int currentItem = Math.max(0, bookmarks.size() - 1);
+//        int currentItem = 0;
         if (!TextUtils.isEmpty(countyName)) {
             for (int i = 0; i < bookmarks.size(); i++) {
                 if (bookmarks.get(i).getCounty().getName().equals(countyName)) {
