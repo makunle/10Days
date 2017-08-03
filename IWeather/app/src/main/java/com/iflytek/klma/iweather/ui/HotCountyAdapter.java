@@ -60,8 +60,7 @@ public class HotCountyAdapter extends RecyclerView.Adapter<HotCountyAdapter.MVie
                 int position = viewHolder.getAdapterPosition();
                 County county = mCounties.get(position);
                 if(DatabaseUtil.getInstance().addWeatherBookMark(county.getName())){
-                    Intent intent = new Intent(context, WeatherShowActivity.class);
-                    context.startActivity(intent);
+                    WeatherShowActivity.startMe(context, county.getName());
                     ((Activity)context).finish();
                 } else {
                     Toast.makeText(context, "城市名称错误，请尝试更新热点城市列表", Toast.LENGTH_SHORT).show();

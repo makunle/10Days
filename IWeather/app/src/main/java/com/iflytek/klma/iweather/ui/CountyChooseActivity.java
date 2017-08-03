@@ -36,6 +36,7 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.County;
 import com.iflytek.klma.iweather.gson.IflyWeather;
+import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.AndroidUtil;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
@@ -111,12 +112,15 @@ public class CountyChooseActivity extends AppCompatActivity {
         mSearchedListView.setOnItemClickListener(selectResultClickListener);
     }
 
+    /**
+     * 文字搜索结果选取事件
+     */
     private AdapterView.OnItemClickListener selectResultClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String countyName = mSearchedAdapter.getItem(position).split(" -")[0];
             DatabaseUtil.getInstance().addWeatherBookMark(countyName);
-            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
+            WeatherShowActivity.startMe(CountyChooseActivity.this, countyName);
             CountyChooseActivity.this.finish();
         }
     };
@@ -304,14 +308,14 @@ public class CountyChooseActivity extends AppCompatActivity {
                 String res = understanderResult.getResultString();
                 Log.d(TAG, "onResult: " + res);
                 if (!TextUtils.isEmpty(res) && 0 == getResultError(res)) {
-                    IflyWeather weather = JsonUtil.handleIflyWeatherJson(res);
+                    Weather weather = JsonUtil.handleIflyWeatherJson(res);
                     if (weather != null) {
                         String countyName = weather.getCountyName();
                         if (DatabaseUtil.getInstance().getCountyByName(countyName) == null) {
                             showTip("不支持当前城市");
                         } else {
                             DatabaseUtil.getInstance().addWeatherBookMark(countyName);
-                            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
+                            WeatherShowActivity.startMe(CountyChooseActivity.this, countyName);
                             return;
                         }
                     }
@@ -340,7 +344,7 @@ public class CountyChooseActivity extends AppCompatActivity {
         // 设置语言区域
         mSpeechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
         // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, "1000");
+        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, "4000");
         // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
         mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
         // 设置标点符号，默认：1（有标点）

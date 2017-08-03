@@ -7,17 +7,20 @@
     <TextView
         android:id="@+id/alarm_info"
         android:layout_width="0dp"
-        android:textSize="22sp"
-        android:paddingLeft="25dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:paddingLeft="25dp"
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/alarm_delete"
-        android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/AlarmItemDeleteButtonText" />
+        android:layout_gravity="center_vertical"
+        android:background="#0fff"
+        android:text="@string/AlarmItemDeleteButtonText"
+        android:textColor="#ce429f" />
+
 
 </LinearLayout>

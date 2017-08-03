@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.gson.HefengWeather;
+import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
 
@@ -90,7 +91,7 @@ public class WeatherInfoFragment extends Fragment {
         String weatherJson = DatabaseUtil.getInstance().getWeatherJsonFromBookmarkId(mBookmarkId);
         if (TextUtils.isEmpty(weatherJson)) return;
 
-        HefengWeather weather = JsonUtil.handleHefengJson(weatherJson);
+        Weather weather = JsonUtil.handleHefengJson(weatherJson);
         if (weather == null) return;
 
         mWeatherInfo.setText("天气状况：" + weather.getInfo());

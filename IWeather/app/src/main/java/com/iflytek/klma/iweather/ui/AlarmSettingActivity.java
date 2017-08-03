@@ -1,5 +1,7 @@
 package com.iflytek.klma.iweather.ui;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.LayoutRes;
@@ -13,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.Alarm;
@@ -69,28 +73,38 @@ public class AlarmSettingActivity extends AppCompatActivity {
         mAlarmListView.setAdapter(mAlarmItemAdapter);
 
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
-        mToolbar.getNormalLeftButton().setOnClickListener(buttonOnClieckListener);
-        mToolbar.getNormalRightButton().setOnClickListener(buttonOnClieckListener);
+        mToolbar.getNormalLeft().setOnClickListener(buttonOnClieckListener);
+        mToolbar.getNormalRight().setOnClickListener(buttonOnClieckListener);
 
         EventBus.getDefault().register(this);
     }
 
     /**
      * 响应EventBus分发的Alarm变化事件
-     *
      * @param msg
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAlarmChanged(AlarmChangeMsg msg) {
         Log.d(TAG, "onAlarmChanged: " + msg.getType());
-        if (msg.getType() == AlarmChangeMsg.ADD) {
-            mAlarmItems.add(new AlarmItem(msg.getAlarmId(), msg.getAlarmTime()));
-        }else if(msg.getType() == AlarmChangeMsg.DEL){
-            for (int i = 0; i < mAlarmItems.size(); i++) {
-                if(mAlarmItems.get(i).getAlarmId() == msg.getAlarmId()){
-                    mAlarmItems.remove(i);
+        switch (msg.getType()){
+            case AlarmChangeMsg.ADD:
+                //ui listview刷新
+                mAlarmItems.add(new AlarmItem(msg.getAlarmId(), msg.getAlarmTime()));
+                //添加系统alarm
+
+                break;
+            case AlarmChangeMsg.DEL:
+                //用于listview刷新
+                for (int i = 0; i < mAlarmItems.size(); i++) {
+
+                    if(mAlarmItems.get(i).getAlarmId() == msg.getAlarmId()){
+                        mAlarmItems.remove(i);
+                        break;
+                    }
                 }
-            }
+                //取消系统alarm
+
+                break;
         }
         mAlarmItemAdapter.notifyDataSetChanged();
     }
@@ -105,18 +119,25 @@ public class AlarmSettingActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.toolbar_left_normal:
+                case R.id.toolbar_normal_left:
                     //返回按钮
                     finish();
                     break;
-                case R.id.toolbar_right_normal:
+                case R.id.toolbar_normal_right:
                     //添加一个提醒
-//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-//                        DatePickerDialog dialog = new DatePickerDialog(AlarmSettingActivity.this);
-//                        dialog.show();
-//                    }
-                    long alarmTime = new Date().getTime();
-                    DatabaseUtil.getInstance().addAlarm(alarmTime + 200000, mBookmarkId);
+                    MyTimeGetDialog dialog = new MyTimeGetDialog(AlarmSettingActivity.this, new MyTimeGetDialog.OnGetTimeListener() {
+                        @Override
+                        public void getTime(Date datetime) {
+                            long alarmTime = datetime.getTime();
+                            long now = new Date().getTime();
+                            if(alarmTime <= now){
+                                Toast.makeText(AlarmSettingActivity.this, "设置的时间即将过期或已过期，请重新设置", Toast.LENGTH_SHORT).show();
+                            }else {
+                                DatabaseUtil.getInstance().addAlarm(alarmTime, mBookmarkId);
+                            }
+                        }
+                    });
+                    dialog.show();
                     break;
             }
         }

@@ -124,7 +124,7 @@ public class DatabaseUtil {
         if (county == null) return false;
         WeatherBookmark weatherBookmark = getWeatherBookMarkByCountyName(countyName);
         if (weatherBookmark != null){
-            EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.HAV));
+//            EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.HAV));
             return true;
         }
 
@@ -217,8 +217,13 @@ public class DatabaseUtil {
         WeatherBookmark bookmark = getWeatherBookMarkByCountyName(countyName);
         if (bookmark == null) return false;
         bookmark.delete();
-
         EventBus.getDefault().post(new DBChangeMsg(bookmark.getId(), DBChangeMsg.DEL));
+
+        List<Alarm> alarms = getAllAlarmByWeatherBookmarkId(bookmark.getId());
+        for(Alarm alarm : alarms){
+            alarm.delete();
+        }
+
         return true;
     }
 
@@ -235,7 +240,6 @@ public class DatabaseUtil {
      */
     public boolean addAlarm(long alarmTime, int bookmarkId) {
         if(getWeatherBookmarkById(bookmarkId) == null) return false;
-        if(alarmTime < new Date().getTime()) return false;
 
         Alarm alarm = new Alarm();
         alarm.setAlarmTime(alarmTime);

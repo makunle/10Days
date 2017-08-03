@@ -7,7 +7,7 @@ import java.util.List;
  * http://guolin.tech/api/weather?cityid=CN101220101&key=7decd6786b9e47ba806484d665f685e6
  */
 
-public class HefengWeather {
+public class HefengWeather implements Weather{
 
     private List<HeWeatherBean> HeWeather;
 
@@ -61,6 +61,11 @@ public class HefengWeather {
 
     public String getUpdateTime(){
         return HeWeather.get(0).basic.update.loc;
+    }
+
+    @Override
+    public String getCountyName() {
+        return HeWeather.get(0).basic.city;
     }
 
     public List<HeWeatherBean> getHeWeather() {

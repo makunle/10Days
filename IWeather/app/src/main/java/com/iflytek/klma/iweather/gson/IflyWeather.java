@@ -9,7 +9,42 @@ import java.util.List;
  * 2、data.result(0).city:城市名
  */
 
-public class IflyWeather {
+public class IflyWeather implements Weather{
+
+    @Override
+    public String getInfo() {
+        return null;
+    }
+
+    @Override
+    public String getNowTemperature() {
+        return null;
+    }
+
+    @Override
+    public String getMinTemperature() {
+        return null;
+    }
+
+    @Override
+    public String getMaxTemperature() {
+        return null;
+    }
+
+    @Override
+    public String getWindDirect() {
+        return null;
+    }
+
+    @Override
+    public String getWindLevel() {
+        return null;
+    }
+
+    @Override
+    public String getUpdateTime() {
+        return null;
+    }
 
     /**
      * data : {"result":[{"airData":53,"airQuality":"良","city":"合肥","date":"2017-07-29","dateLong":1501257600,"exp":{"ct":{"expName":"穿衣指数","level":"炎热","prompt":"天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。"}},"humidity":"56%","lastUpdateTime":"2017-07-29 12:39:15","pm25":"36","temp":35,"tempRange":"28℃~37℃","weather":"多云","weatherType":1,"wind":"东北风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-30","dateLong":1501344000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"雷阵雨","weatherType":4,"wind":"东风3-4级","windLevel":1},{"city":"合肥","date":"2017-07-31","dateLong":1501430400,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"25℃~34℃","weather":"中雨","weatherType":8,"wind":"北风微风","windLevel":0},{"city":"合肥","date":"2017-08-01","dateLong":1501516800,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨","weatherType":7,"wind":"北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-02","dateLong":1501603200,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"小雨转阴","weatherType":7,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-03","dateLong":1501689600,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"27℃~36℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2},{"city":"合肥","date":"2017-08-04","dateLong":1501776000,"lastUpdateTime":"2017-07-29 12:39:15","tempRange":"28℃~37℃","weather":"阴","weatherType":2,"wind":"西北风4-5级","windLevel":2}]}

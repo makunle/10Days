@@ -1,7 +1,10 @@
 package com.iflytek.klma.iweather.ui;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
 import com.iflytek.klma.iweather.gson.HefengWeather;
+import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.DBChangeMsg;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.HttpUtil;
@@ -34,6 +38,8 @@ public class WeatherShowActivity extends AppCompatActivity {
     private static final String TAG = "WeatherShowActivity";
     private static final String URL = "http://guolin.tech/api/weather?cityid=";
     private static final String KEY = "7decd6786b9e47ba806484d665f685e6";
+    private static final String COUNTY_NAME = "COUNTY_NAME";
+
 
     private List<WeatherInfoFragment> mWeatherInfoPages = new ArrayList<WeatherInfoFragment>();
 
@@ -41,6 +47,13 @@ public class WeatherShowActivity extends AppCompatActivity {
     private ViewPager mPageContainer;
     private VerticalSwipeRefreshLayout mSwipeRefresh;
     private MyToolbar mToolbar;
+
+    public static void startMe(Context context, String countyName) {
+        Intent intent = new Intent(context, WeatherShowActivity.class);
+        intent.putExtra(COUNTY_NAME, countyName);
+        context.startActivity(intent);
+        ((Activity)context).finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +65,7 @@ public class WeatherShowActivity extends AppCompatActivity {
         mSwipeRefresh = (VerticalSwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
 
-        mToolbar.getNormalRightButton().setOnClickListener(new View.OnClickListener() {
+        mToolbar.getNormalRight().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(WeatherShowActivity.this, BookmarkSettingActivity.class));
@@ -101,14 +114,6 @@ public class WeatherShowActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            case DBChangeMsg.HAV:
-                for (int i = 0; i < mWeatherInfoPages.size(); i++) {
-                    if(mWeatherInfoPages.get(i).getmBookmarkId() == msg.getBookMarkId()){
-                        mPageContainer.setCurrentItem(i);
-                        break;
-                    }
-                }
-                break;
         }
         //更新WeatherBookmark的showOrder
         for (int i = 0; i < mWeatherInfoPages.size(); i++) {
@@ -118,6 +123,28 @@ public class WeatherShowActivity extends AppCompatActivity {
         pagerAdapter.notifyDataSetChanged();
         mPageContainer.setCurrentItem(mWeatherInfoPages.size());
         refreshOnlyIfNeed();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
+
+        int currentItem = Math.max(0, bookmarks.size() - 1);
+        String countyName = getIntent().getStringExtra(COUNTY_NAME);
+        if(!TextUtils.isEmpty(countyName)){
+            for (int i = 0; i < bookmarks.size(); i++) {
+                if(bookmarks.get(i).getCounty().getName().equals(countyName)){
+                    currentItem = i;
+                    break;
+                }
+            }
+        }
+        mPageContainer.setCurrentItem(currentItem);
+        mShowTimeTv.setText("--" + (currentItem) + "--");
+
+        mToolbar.setTitle(bookmarks.get(currentItem).getCounty().getName());
     }
 
     /**
@@ -133,12 +160,6 @@ public class WeatherShowActivity extends AppCompatActivity {
 
         mPageContainer.setAdapter(pagerAdapter);
         mPageContainer.addOnPageChangeListener(pageChangeListener);
-
-        int currentItem = bookmarks.size() - 1;
-        mPageContainer.setCurrentItem(currentItem);
-        mShowTimeTv.setText("--" + (currentItem) + "--");
-
-        mToolbar.setTitle(bookmarks.get(currentItem).getCounty().getName());
     }
 
     /**
@@ -219,7 +240,7 @@ public class WeatherShowActivity extends AppCompatActivity {
                     String requestUrl = URL + weatherId + "&key=" + KEY;
                     String json = HttpUtil.getResponse(requestUrl);
                     if (!TextUtils.isEmpty(json)) {
-                        HefengWeather weather = JsonUtil.handleHefengJson(json);
+                        Weather weather = JsonUtil.handleHefengJson(json);
                         wb.setWeatherData(json);
                         wb.setUpdateTime(Util.stringTime2long(weather.getUpdateTime()));
                         wb.save();

@@ -37,7 +37,7 @@ public class BookmarkSettingActivity extends AppCompatActivity {
         mBookmarkList = (ListView) findViewById(R.id.bookmark_list);
 
         List<WeatherBookmark> weatherBookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
-        for (WeatherBookmark wb : weatherBookmarks){
+        for (WeatherBookmark wb : weatherBookmarks) {
             mCountyNameList.add(wb.getCounty().getName());
         }
 
@@ -52,24 +52,25 @@ public class BookmarkSettingActivity extends AppCompatActivity {
         });
 
         mToolBar = (MyToolbar) findViewById(R.id.toolbar);
-        mToolBar.getNormalRightButton().setOnClickListener(clickListener);
-        mToolBar.getNormalLeftButton().setOnClickListener(clickListener);
+        mToolBar.getNormalRight().setOnClickListener(clickListener);
+        mToolBar.getNormalLeft().setOnClickListener(clickListener);
     }
 
     /**
      * 城市列表长按菜单响应
+     *
      * @param item
      * @return
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String countyName = ((TextView)info.targetView).getText().toString();
-        switch (item.getItemId()){
+        String countyName = ((TextView) info.targetView).getText().toString();
+        switch (item.getItemId()) {
             case ITEM_DELETE:   //删除
                 DatabaseUtil.getInstance().deleteWeatherBookMarkByCountyName(countyName);
                 for (int i = 0; i < mCountyNameList.size(); i++) {
-                    if(countyName.equals(mCountyNameList.get(i))){
+                    if (countyName.equals(mCountyNameList.get(i))) {
                         mCountyNameList.remove(i);
                         break;
                     }
@@ -93,10 +94,13 @@ public class BookmarkSettingActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.toolbar_left_normal:
+                case R.id.toolbar_normal_left:
+                    if (DatabaseUtil.getInstance().getAllWeatherBookMark().size() <= 0) {
+                        startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
+                    }
                     finish();
                     break;
-                case R.id.toolbar_right_normal:
+                case R.id.toolbar_normal_right:
                     startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
                     break;
                 default:

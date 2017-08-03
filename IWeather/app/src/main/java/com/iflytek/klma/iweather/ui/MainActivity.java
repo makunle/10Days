@@ -50,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
-        LitePal.initialize(getApplicationContext());   //litepal数据库初始化
-        SpeechUtility.createUtility(getApplicationContext(), getString(R.string.appid)); //语音理解sdk初始化
-        DatabaseUtil.getInstance().firstTimeInitDataBase(this); //初次运行复制数据库
 
         if(Build.VERSION.SDK_INT >= 21){
             View decorView = getWindow().getDecorView();

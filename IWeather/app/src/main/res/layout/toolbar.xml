@@ -11,19 +11,24 @@
         android:id="@+id/toolbar_type_normal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/toolbar_left_normal"
+        <LinearLayout
+            android:id="@+id/toolbar_normal_left"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/toolbar_back_arrow"
-            android:scaleType="centerInside"
-            android:scaleX="0.8"
-            android:scaleY="0.8" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/toolbar_normal_left_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/toolbar_back_arrow"
+                android:scaleType="centerInside"
+                android:scaleX="0.8"
+                android:scaleY="0.8" />
+        </LinearLayout>
 
 
         <TextView
@@ -37,17 +42,22 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-
-        <ImageButton
-            android:id="@+id/toolbar_right_normal"
+        <LinearLayout
+            android:id="@+id/toolbar_normal_right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/toolbar_setting"
-            android:scaleType="centerInside"
-            android:scaleX="0.8"
-            android:scaleY="0.8" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/toolbar_normal_right_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/toolbar_setting"
+                android:scaleType="centerInside"
+                android:scaleX="0.8"
+                android:scaleY="0.8" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -87,17 +97,17 @@
             android:textSize="13sp" />
 
         <ImageButton
-            android:visibility="invisible"
             android:id="@+id/toolbar_right_search"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center"
-            android:paddingRight="5dp"
             android:background="#fff"
+            android:paddingRight="5dp"
             android:scaleType="centerInside"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:src="@drawable/toobar_close_dark" />
+            android:src="@drawable/toobar_close_dark"
+            android:visibility="invisible" />
 
     </LinearLayout>
 

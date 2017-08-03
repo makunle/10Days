@@ -6,13 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/slide_in</item>
-        <item name="android:windowExitTransition">@transition/slide_out</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-
     </style>
 
 </resources>

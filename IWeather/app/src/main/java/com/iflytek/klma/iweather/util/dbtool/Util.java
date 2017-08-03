@@ -31,7 +31,7 @@ public class Util {
      * @return
      */
     public static String longTime2String(long time){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm EE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm EE  M月d日");
         java.util.Date date = new Date(time);
         return dateFormat.format(date);
     }

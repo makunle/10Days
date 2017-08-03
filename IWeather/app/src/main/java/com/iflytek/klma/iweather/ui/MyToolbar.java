@@ -5,16 +5,18 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.iflytek.klma.iweather.R;
+
+import static com.iflytek.klma.iweather.R.id.toolbar_normal_right_img;
 
 /**
  * 支持一般toolbar类型与搜索框类型
@@ -27,8 +29,10 @@ public class MyToolbar extends LinearLayout {
     public static final int SEARCH_TYPE = 1;
     private int mType;
 
-    private ImageButton mNormalLeftButton;
-    private ImageButton mNormalRightButton;
+    private ImageView mNormalLeftImage;
+    private ImageView mNormalRightImage;
+    private View mNormalLeft;
+    private View mNormalRight;
     private ImageButton mSearchLeftButton;
     private ImageButton mSearchRightButton;
 
@@ -62,12 +66,12 @@ public class MyToolbar extends LinearLayout {
 
             Drawable leftBackgroundImage = a.getDrawable(R.styleable.MyToolbar_leftBackground);
             if(leftBackgroundImage != null){
-                mNormalLeftButton.setBackground(leftBackgroundImage);
+                mNormalLeftImage.setBackground(leftBackgroundImage);
             }
 
             Drawable rightBackgroundImage = a.getDrawable(R.styleable.MyToolbar_rightBackground);
             if(rightBackgroundImage != null){
-                mNormalRightButton.setBackground(rightBackgroundImage);
+                mNormalRightImage.setBackground(rightBackgroundImage);
             }
 
             String title = a.getString(R.styleable.MyToolbar_title);
@@ -77,12 +81,12 @@ public class MyToolbar extends LinearLayout {
 
             boolean showLeftButton = a.getBoolean(R.styleable.MyToolbar_showLeftButton, true);
             if(!showLeftButton){
-                mNormalLeftButton.setVisibility(View.INVISIBLE);
+                mNormalLeft.setVisibility(View.INVISIBLE);
             }
 
             boolean showRightButton = a.getBoolean(R.styleable.MyToolbar_showRightButton, true);
             if(!showRightButton){
-                mNormalRightButton.setVisibility(View.INVISIBLE);
+                mNormalRight.setVisibility(View.INVISIBLE);
             }
 
         } else if(mType == SEARCH_TYPE){    //类型为搜索toobar
@@ -109,8 +113,10 @@ public class MyToolbar extends LinearLayout {
     private void initView(Context context) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.toolbar, this);
-        mNormalLeftButton = (ImageButton) findViewById(R.id.toolbar_left_normal);
-        mNormalRightButton = (ImageButton) findViewById(R.id.toolbar_right_normal);
+        mNormalLeftImage = (ImageView) findViewById(R.id.toolbar_normal_left_img);
+        mNormalRightImage = (ImageView) findViewById(toolbar_normal_right_img);
+        mNormalLeft = findViewById(R.id.toolbar_normal_left);
+        mNormalRight = findViewById(R.id.toolbar_normal_right);
         mSearchLeftButton = (ImageButton) findViewById(R.id.toolbar_left_search);
         mSearchRightButton = (ImageButton) findViewById(R.id.toolbar_right_search);
 
@@ -121,13 +127,22 @@ public class MyToolbar extends LinearLayout {
         searchLayout = (LinearLayout) findViewById(R.id.toolbar_type_search);
     }
 
-    public ImageButton getNormalLeftButton() {
-        return mNormalLeftButton;
+//    public ImageButton getNormalLeftButton() {
+//        return mNormalLeftImage;
+//    }
+//
+//    public ImageButton getNormalRightButton() {
+//        return mNormalRightImage;
+//    }
+
+    public View getNormalLeft() {
+        return mNormalLeft;
     }
 
-    public ImageButton getNormalRightButton() {
-        return mNormalRightButton;
+    public View getNormalRight() {
+        return mNormalRight;
     }
+
 
     public ImageButton getSearchLeftButton() {
         return mSearchLeftButton;
