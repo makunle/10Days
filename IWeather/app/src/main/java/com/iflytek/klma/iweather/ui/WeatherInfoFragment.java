@@ -43,6 +43,7 @@ public class WeatherInfoFragment extends Fragment {
     private TextView mUpdateTime;
     private ImageView mWeatherPic;
     private LinearLayout mMainLayout;
+    private LinearLayout mAirLayout;
 
 
     private View mView;
@@ -78,6 +79,7 @@ public class WeatherInfoFragment extends Fragment {
             mAQI = (TextView) mView.findViewById(R.id.aqi);
             mUpdateTime = (TextView) mView.findViewById(R.id.update_time);
             mWeatherPic = (ImageView) mView.findViewById(R.id.weather_pic);
+            mAirLayout = (LinearLayout) mView.findViewById(R.id.air_layout);
 
             mMainLayout.setVisibility(View.INVISIBLE);
         }
@@ -127,9 +129,15 @@ public class WeatherInfoFragment extends Fragment {
         mSportInfo.setText("运动建议："+weather.getSportInfo());
         mCarWashInfo.setText("洗车建议："+weather.getCarWashInfo());
         mComfortInfo.setText("舒适度："+weather.getComfortInfo());
+
         mPM25.setText(weather.getPM25());
         mAirQuality.setText(weather.getAirQuality());
         mAQI.setText(weather.getAQI());
+        if(weather.getPM25().equals("-1")||
+                weather.getAirQuality().equals("-1")||
+                weather.getAQI().equals("-1")){
+            mAirLayout.setVisibility(View.GONE);
+        }
 
         mUpdateTime.setText(weather.getUpdateTime()+"更新");
 

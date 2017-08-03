@@ -293,8 +293,9 @@ public class WeatherShowActivity extends AppCompatActivity {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         Date now = new Date();
         for (WeatherBookmark wb : bookmarks) {
+            Weather weather = JsonUtil.handleHefengJson(wb.getWeatherData());
             //最近一次更新时间在2小时以前的都需要更新
-            if (now.getTime() - wb.getUpdateTime().getTime() > 5 * 60 * 60 * 1000) {
+            if(!(weather != null && weather.isDataUsable()) || now.getTime() - wb.getUpdateTime().getTime() > 5 * 60 * 60 * 1000){
                 needupdate.add(wb.getId());
             }
         }

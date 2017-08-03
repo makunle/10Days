@@ -20,7 +20,7 @@ public class JsonUtil {
      */
     public static Weather handleHefengJson(String json){
         HefengWeather weather =  new Gson().fromJson(json, HefengWeather.class);
-        if(weather.isStatusOk()) return weather;
+        if(weather!=null && weather.isStatusOk()) return weather;
         return null;
     }
 

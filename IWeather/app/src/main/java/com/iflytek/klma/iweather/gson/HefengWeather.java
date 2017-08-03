@@ -81,12 +81,20 @@ public class HefengWeather implements Weather {
 
     @Override
     public String getAirQuality() {
-        return HeWeather.get(0).aqi.city.qlty;
+        try {
+            return HeWeather.get(0).aqi.city.qlty;
+        }catch (Exception e){
+            return "-1";
+        }
     }
 
     @Override
     public String getPM25() {
-        return HeWeather.get(0).aqi.city.pm25;
+        try {
+            return HeWeather.get(0).aqi.city.pm25;
+        }catch (Exception e){
+            return "-1";
+        }
     }
 
     @Override
@@ -106,7 +114,11 @@ public class HefengWeather implements Weather {
 
     @Override
     public String getAQI() {
-        return HeWeather.get(0).aqi.city.aqi;
+        try {
+            return HeWeather.get(0).aqi.city.aqi;
+        }catch (Exception e){
+            return "-1";
+        }
     }
 
     public List<HeWeatherBean> getHeWeather() {
