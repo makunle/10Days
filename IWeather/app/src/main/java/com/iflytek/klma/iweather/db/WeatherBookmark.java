@@ -1,19 +1,8 @@
 package com.iflytek.klma.iweather.db;
 
-import android.icu.text.SimpleDateFormat;
-import android.text.format.DateUtils;
-
-import com.iflytek.klma.iweather.util.DatabaseUtil;
-import com.iflytek.klma.iweather.util.dbtool.Util;
-
-import org.litepal.LitePal;
-import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.typechange.DateOrm;
 
 import java.sql.Date;
-import java.text.ParseException;
-import java.util.Calendar;
 
 
 /**

@@ -115,16 +115,17 @@ public class DatabaseUtil {
 
     /**
      * * 添加一个新的County天气收藏
-     * @post DBChangeMsg
+     *
      * @param countyName
      * @return 是否添加成功
+     * @post DBChangeMsg
      */
     public boolean addWeatherBookMark(String countyName) {
         County county = getCountyByName(countyName);
         if (county == null) return false;
         WeatherBookmark weatherBookmark = getWeatherBookMarkByCountyName(countyName);
-        if (weatherBookmark != null){
-//            EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.HAV));
+        if (weatherBookmark != null) {
+            EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.SET, countyName));
             return true;
         }
 
@@ -140,7 +141,7 @@ public class DatabaseUtil {
         weatherBookmark.setShowOrder(showOrder);
         weatherBookmark.save();
 
-        EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.ADD));
+        EventBus.getDefault().post(new DBChangeMsg(weatherBookmark.getId(), DBChangeMsg.ADD, countyName));
 
         return true;
     }
@@ -199,6 +200,7 @@ public class DatabaseUtil {
 
     /**
      * 通过id获取WeatherBookMark
+     *
      * @param id
      * @return @Nullable
      */
@@ -217,10 +219,10 @@ public class DatabaseUtil {
         WeatherBookmark bookmark = getWeatherBookMarkByCountyName(countyName);
         if (bookmark == null) return false;
         bookmark.delete();
-        EventBus.getDefault().post(new DBChangeMsg(bookmark.getId(), DBChangeMsg.DEL));
+        EventBus.getDefault().post(new DBChangeMsg(bookmark.getId(), DBChangeMsg.DEL, countyName));
 
         List<Alarm> alarms = getAllAlarmByWeatherBookmarkId(bookmark.getId());
-        for(Alarm alarm : alarms){
+        for (Alarm alarm : alarms) {
             alarm.delete();
         }
 
@@ -233,38 +235,65 @@ public class DatabaseUtil {
 
     /**
      * 添加一个alarm事件到数据库
-     * @post AlarmChangeMsg
+     *
      * @param alarmTime
      * @param bookmarkId
      * @return
+     * @post AlarmChangeMsg
      */
     public boolean addAlarm(long alarmTime, int bookmarkId) {
-        if(getWeatherBookmarkById(bookmarkId) == null) return false;
+        if (getWeatherBookmarkById(bookmarkId) == null) return false;
 
         Alarm alarm = new Alarm();
         alarm.setAlarmTime(alarmTime);
         alarm.setWeatherBookmarkId(bookmarkId);
         alarm.save();
 
-        AlarmChangeMsg changeMsg = new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.ADD, alarm.getAlarmTime());
+        AlarmChangeMsg changeMsg = new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.ADD, alarm.getAlarmTime(), alarm.isRepeat());
         EventBus.getDefault().post(changeMsg);
         return true;
     }
 
     /**
      * 通过id删除一个alarm
+     *
      * @param alarmId
      * @return
      */
-    public boolean deleteAlarmById(int alarmId){
+    public boolean deleteAlarmById(int alarmId) {
         Alarm alarm = DataSupport.where("id = ?", String.valueOf(alarmId)).findFirst(Alarm.class);
-        if(alarm == null) return false;
+        if (alarm == null) return false;
         alarm.delete();
-        EventBus.getDefault().post(new AlarmChangeMsg(alarmId, AlarmChangeMsg.DEL, alarm.getAlarmTime()));
+        EventBus.getDefault().post(new AlarmChangeMsg(alarmId, AlarmChangeMsg.DEL, alarm.getAlarmTime(), alarm.isRepeat()));
         return true;
     }
 
     public List<County> getAllCountyNameLike(String str) {
-        return DataSupport.where("name like '%" + str +"%'").find(County.class);
+        return DataSupport.where("name like '%" + str + "%'").find(County.class);
+    }
+
+    public Alarm getNearestAlarm() {
+        Date date = new Date();
+        Alarm alarm = DataSupport.where("alarmTime > ?", String.valueOf(date.getTime())).order("alarmTime asc").findFirst(Alarm.class);
+        return alarm;
+    }
+
+    public Alarm getAlarmById(int alarmId) {
+        return DataSupport.where("id = ?", String.valueOf(alarmId)).findFirst(Alarm.class);
+    }
+
+    /**
+     * 执行alarm清理工作，没有设置repeat的过期alarm将被删除
+     */
+    public void cleanAlarm() {
+        long now = new Date().getTime();
+        List<Alarm> alarms = DataSupport.where("alarmTime <= ?", String.valueOf(now)).find(Alarm.class);
+        for (Alarm alarm : alarms) {
+            if (alarm.isRepeat()) { //设置重复的添加下一次alarm,按天循环
+                addAlarm(alarm.getAlarmTime() + 1000 * 60 * 60 * 24, alarm.getWeatherBookmarkId());
+            }
+            EventBus.getDefault().post(new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.DEL, alarm.getAlarmTime(), alarm.isRepeat()));
+            alarm.delete();
+        }
     }
 }

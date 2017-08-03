@@ -12,7 +12,7 @@ public class AlarmChangeMsg {
     private int type;           //事件类型
     private long alarmTime;
 
-    public AlarmChangeMsg(int alarmId, int type, long alarmTime) {
+    public AlarmChangeMsg(int alarmId, int type, long alarmTime, boolean repeat) {
         this.alarmId = alarmId;
         this.type = type;
         this.alarmTime = alarmTime;

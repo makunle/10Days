@@ -113,7 +113,7 @@ public class CountyChooseActivity extends AppCompatActivity {
     }
 
     /**
-     * 文字搜索结果选取事件
+     * 根据文字搜索结果选取事件，添加城市
      */
     private AdapterView.OnItemClickListener selectResultClickListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -301,6 +301,10 @@ public class CountyChooseActivity extends AppCompatActivity {
         public void onEndOfSpeech() {
         }
 
+        /**
+         * 根据语音添加城市
+         * @param understanderResult
+         */
         @Override
         public void onResult(UnderstanderResult understanderResult) {
             Log.d(TAG, "语义理解失败\n" + understanderResult.getResultString());

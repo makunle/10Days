@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -12,18 +11,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
-import com.iflytek.klma.iweather.gson.HefengWeather;
 import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.DBChangeMsg;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.HttpUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
-import com.iflytek.klma.iweather.util.dbtool.Util;
+import com.iflytek.klma.iweather.util.Util;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,7 +38,7 @@ public class WeatherShowActivity extends AppCompatActivity {
     private static final String TAG = "WeatherShowActivity";
     private static final String URL = "http://guolin.tech/api/weather?cityid=";
     private static final String KEY = "7decd6786b9e47ba806484d665f685e6";
-    private static final String COUNTY_NAME = "COUNTY_NAME";
+    public static final String COUNTY_NAME = "COUNTY_NAME";
 
 
     private List<WeatherInfoFragment> mWeatherInfoPages = new ArrayList<WeatherInfoFragment>();
@@ -52,7 +52,7 @@ public class WeatherShowActivity extends AppCompatActivity {
         Intent intent = new Intent(context, WeatherShowActivity.class);
         intent.putExtra(COUNTY_NAME, countyName);
         context.startActivity(intent);
-        ((Activity)context).finish();
+        ((Activity) context).finish();
     }
 
     @Override
@@ -83,6 +83,12 @@ public class WeatherShowActivity extends AppCompatActivity {
         refreshOnlyIfNeed();
 
         EventBus.getDefault().register(this);
+
+        Toast.makeText(this, "get string extr" + getIntent().getStringExtra(COUNTY_NAME), Toast.LENGTH_SHORT).show();
+
+        String countyName = getIntent().getStringExtra(COUNTY_NAME);
+        if (TextUtils.isEmpty(countyName)) countyName = "";
+        setPageToCountyByName(countyName);
     }
 
     @Override
@@ -105,6 +111,8 @@ public class WeatherShowActivity extends AppCompatActivity {
                 fragment.setmBookmarkId(msg.getBookMarkId());
                 mWeatherInfoPages.add(fragment);
 
+                pagerAdapter.notifyDataSetChanged();
+                mPageContainer.setCurrentItem(mWeatherInfoPages.size());
                 break;
             case DBChangeMsg.DEL:
                 for (int i = 0; i < mWeatherInfoPages.size(); i++) {
@@ -113,29 +121,27 @@ public class WeatherShowActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                pagerAdapter.notifyDataSetChanged();
+                setPageToCountyByName(mToolbar.getTitleTextView().getText().toString());
+                break;
+            case DBChangeMsg.SET:
+                Log.d(TAG, "onDatabaseDataChanged: + set : " + msg.getBookMarkId());
+                setPageToCountyByName(DatabaseUtil.getInstance().getCountyByBookmarkId(msg.getBookMarkId()).getName());
                 break;
         }
         //更新WeatherBookmark的showOrder
         for (int i = 0; i < mWeatherInfoPages.size(); i++) {
             DatabaseUtil.getInstance().updateWeatherBookMarkShowOrder(mWeatherInfoPages.get(i).getmBookmarkId(), i + 1);
         }
-
-        pagerAdapter.notifyDataSetChanged();
-        mPageContainer.setCurrentItem(mWeatherInfoPages.size());
         refreshOnlyIfNeed();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
-
+    private void setPageToCountyByName(String countyName) {
+        final List<WeatherBookmark> bookmarks = DatabaseUtil.getInstance().getAllWeatherBookMark();
         int currentItem = Math.max(0, bookmarks.size() - 1);
-        String countyName = getIntent().getStringExtra(COUNTY_NAME);
-        if(!TextUtils.isEmpty(countyName)){
+        if (!TextUtils.isEmpty(countyName)) {
             for (int i = 0; i < bookmarks.size(); i++) {
-                if(bookmarks.get(i).getCounty().getName().equals(countyName)){
+                if (bookmarks.get(i).getCounty().getName().equals(countyName)) {
                     currentItem = i;
                     break;
                 }
@@ -143,8 +149,8 @@ public class WeatherShowActivity extends AppCompatActivity {
         }
         mPageContainer.setCurrentItem(currentItem);
         mShowTimeTv.setText("--" + (currentItem) + "--");
-
         mToolbar.setTitle(bookmarks.get(currentItem).getCounty().getName());
+        Log.d(TAG, "setPageToCountyByName: set item : " + currentItem + " " + countyName);
     }
 
     /**
@@ -214,9 +220,7 @@ public class WeatherShowActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             int bookmarkId = mWeatherInfoPages.get(position).getmBookmarkId();
             String name = DatabaseUtil.getInstance().getCountyByBookmarkId(bookmarkId).getName();
-            mShowTimeTv.setText("--" + position + "--");
-
-            mToolbar.setTitle(name);
+            setPageToCountyByName(name);
         }
 
         @Override

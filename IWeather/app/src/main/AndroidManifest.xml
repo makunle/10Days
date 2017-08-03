@@ -39,6 +39,10 @@
         <activity
             android:name=".ui.AlarmSettingActivity"
             android:launchMode="singleTask"></activity>
+
+        <receiver
+            android:name=".ui.AlarmInfoBroadcastReceiver"
+            android:enabled="true" />
     </application>
 
 </manifest>

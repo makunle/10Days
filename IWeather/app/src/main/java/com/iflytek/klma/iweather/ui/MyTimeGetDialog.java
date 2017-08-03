@@ -32,7 +32,7 @@ public class MyTimeGetDialog {
     public MyTimeGetDialog(final Context context, final OnGetTimeListener getTime) {
 
         datetime = new Date();
-        datetime.setHours(datetime.getHours() + 1);
+        datetime.setMinutes(datetime.getMinutes() + 1);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 

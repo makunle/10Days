@@ -16,6 +16,8 @@ public class Alarm extends DataSupport {
 
     private long alarmTime;         //提醒时间
 
+    private boolean repeat;         //是否重复
+
     public int getId() {
         return id;
     }
@@ -30,6 +32,14 @@ public class Alarm extends DataSupport {
 
     public void setWeatherBookmarkId(int weatherBookmarkId) {
         this.weatherBookmarkId = weatherBookmarkId;
+    }
+
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        this.repeat = repeat;
     }
 
     public long getAlarmTime() {

@@ -1,7 +1,5 @@
 package com.iflytek.klma.iweather.ui;
 
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.LayoutRes;
@@ -15,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +21,7 @@ import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.Alarm;
 import com.iflytek.klma.iweather.util.AlarmChangeMsg;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
-import com.iflytek.klma.iweather.util.dbtool.Util;
+import com.iflytek.klma.iweather.util.Util;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,7 +35,8 @@ public class AlarmSettingActivity extends AppCompatActivity {
 
     private static final String TAG = "AlarmSettingActivity";
 
-    private static final String BOOKMARK_ID = "BOOKMARK_ID";
+    public static final String BOOKMARK_ID = "BOOKMARK_ID";
+
 
     private ListView mAlarmListView;
     private List<AlarmItem> mAlarmItems;
@@ -85,13 +83,11 @@ public class AlarmSettingActivity extends AppCompatActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAlarmChanged(AlarmChangeMsg msg) {
-        Log.d(TAG, "onAlarmChanged: " + msg.getType());
         switch (msg.getType()){
             case AlarmChangeMsg.ADD:
                 //ui listview刷新
                 mAlarmItems.add(new AlarmItem(msg.getAlarmId(), msg.getAlarmTime()));
-                //添加系统alarm
-
+                Util.activeNearestAlarm(AlarmSettingActivity.this);
                 break;
             case AlarmChangeMsg.DEL:
                 //用于listview刷新
@@ -103,7 +99,6 @@ public class AlarmSettingActivity extends AppCompatActivity {
                     }
                 }
                 //取消系统alarm
-
                 break;
         }
         mAlarmItemAdapter.notifyDataSetChanged();
@@ -131,7 +126,7 @@ public class AlarmSettingActivity extends AppCompatActivity {
                             long alarmTime = datetime.getTime();
                             long now = new Date().getTime();
                             if(alarmTime <= now){
-                                Toast.makeText(AlarmSettingActivity.this, "设置的时间即将过期或已过期，请重新设置", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AlarmSettingActivity.this, "设置的时间即将过期或已过期，请重新设置", Toast.LENGTH_LONG).show();
                             }else {
                                 DatabaseUtil.getInstance().addAlarm(alarmTime, mBookmarkId);
                             }
