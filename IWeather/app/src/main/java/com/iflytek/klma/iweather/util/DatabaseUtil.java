@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -287,8 +288,8 @@ public class DatabaseUtil {
      * 执行alarm清理工作，没有设置repeat的过期alarm将被删除
      */
     public void cleanAlarm() {
-        long now = new Date().getTime();
-        List<Alarm> alarms = DataSupport.where("alarmTime <= ?", String.valueOf(now)).find(Alarm.class);
+        long now = Calendar.getInstance().getTimeInMillis();
+        List<Alarm> alarms = DataSupport.where("alarmTime < ?", String.valueOf(now)).find(Alarm.class);
         for (Alarm alarm : alarms) {
             if (alarm.isRepeat()) { //设置重复的添加下一次alarm,按天循环
                 addAlarm(alarm.getAlarmTime() + 1000 * 60 * 60 * 24, alarm.getWeatherBookmarkId());

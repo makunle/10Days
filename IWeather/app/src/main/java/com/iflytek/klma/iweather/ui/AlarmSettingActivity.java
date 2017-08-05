@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.util.DiffUtil;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -125,13 +127,11 @@ public class AlarmSettingActivity extends AppCompatActivity {
                     //添加一个提醒
                     MyTimeGetDialog dialog = new MyTimeGetDialog(AlarmSettingActivity.this, new MyTimeGetDialog.OnGetTimeListener() {
                         @Override
-                        public void getTime(Date datetime) {
-                            long alarmTime = datetime.getTime();
-                            long now = new Date().getTime();
-                            if(alarmTime <= now){
+                        public void getTime(Calendar calendar) {
+                            if(calendar.compareTo(Calendar.getInstance()) < 0){
                                 Toast.makeText(AlarmSettingActivity.this, "设置的时间即将过期或已过期，请重新设置", Toast.LENGTH_LONG).show();
                             }else {
-                                DatabaseUtil.getInstance().addAlarm(alarmTime, mBookmarkId);
+                                DatabaseUtil.getInstance().addAlarm(calendar.getTimeInMillis(), mBookmarkId);
                             }
                         }
                     });
@@ -202,7 +202,9 @@ public class AlarmSettingActivity extends AppCompatActivity {
 
         public AlarmItem(int alarmId, long time) {
             this.alarmId = alarmId;
-            this.time = Util.getDayShow(new Date(time));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(time);
+            this.time = Util.getDayShow(calendar);
         }
 
         public int getAlarmId() {

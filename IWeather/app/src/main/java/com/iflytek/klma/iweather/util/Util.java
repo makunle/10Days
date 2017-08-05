@@ -16,6 +16,7 @@ import com.iflytek.klma.iweather.util.DatabaseUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -74,10 +75,11 @@ public class Util {
         Log.d("Alarm", "set alarm time: " + nearestAlarm.getAlarmTime() + " " + cn);
     }
 
-    public static String getDayShow(Date date){
-        String dateShow = longTime2String(date.getTime());
+    public static String getDayShow(Calendar calendar){
+        String dateShow = longTime2String(calendar.getTime().getTime());
         SimpleDateFormat dateFormat = new SimpleDateFormat(" MM-dd");
-        int deltaDay = date.getDay() - new Date().getDay();
+
+        int deltaDay = calendar.get(Calendar.DAY_OF_YEAR) - Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
         switch (deltaDay){
             case 0:
                 dateShow += " 今天";
@@ -89,7 +91,8 @@ public class Util {
                 dateShow += " 后天";
                 break;
             default:
-                dateShow += dateFormat.format(date);
+                dateShow += dateFormat.format(calendar.getTime());
+                break;
         }
         return dateShow;
     }

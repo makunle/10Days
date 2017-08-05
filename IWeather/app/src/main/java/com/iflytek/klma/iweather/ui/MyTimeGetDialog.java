@@ -27,17 +27,15 @@ public class MyTimeGetDialog {
 
     private static final String TAG = "MyTimeGetDialog";
 
-    private Date datetime;
+    private Calendar calendar;
     AlertDialog dialog;
 
     public MyTimeGetDialog(final Context context, final OnGetTimeListener getTime) {
 
-        datetime = new Date();
-        datetime.setMinutes(datetime.getMinutes() + 1);
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) +1);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        Log.d(TAG, "MyTimeGetDialog: year " + datetime.getYear());
 
         builder.setTitle("请选择");
         View view = LayoutInflater.from(context).inflate(R.layout.datetime_get_dialog, null);
@@ -46,8 +44,9 @@ public class MyTimeGetDialog {
         final Button timebutton = (Button) view.findViewById(R.id.get_time);
         final Button datebutton = (Button) view.findViewById(R.id.get_date);
         final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd EE");
-        timebutton.setText("选择日期：" + dateFormat.format(datetime));
-        datebutton.setText("选择时间：" + datetime.getHours() + ":" + datetime.getMinutes() + (datetime.getHours() > 12 ? " 下午" : " 上午"));
+
+        timebutton.setText("选择日期：" + Util.getDayShow(calendar));
+        datebutton.setText("选择时间：" + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + (calendar.get(Calendar.HOUR_OF_DAY) > 12 ? " 下午" : " 上午"));
 
         timebutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,12 +54,12 @@ public class MyTimeGetDialog {
                 new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year, month, dayOfMonth);
-                        datetime = calendar.getTime();
-                        timebutton.setText("选择日期：" + Util.getDayShow(datetime));
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        timebutton.setText("选择日期：" + Util.getDayShow(calendar));
                     }
-                }, datetime.getYear() + 1900, datetime.getMonth(), datetime.getDay()).show();
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
         datebutton.setOnClickListener(new View.OnClickListener() {
@@ -69,19 +68,17 @@ public class MyTimeGetDialog {
                 new TimePickerDialog(context, AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        datetime.setHours(hourOfDay);
-                        datetime.setMinutes(minute);
-                        datetime.setSeconds(2);
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute);
                         datebutton.setText("选择时间：" + hourOfDay + ":" + minute + (hourOfDay > 12 ? " 下午" : " 上午"));
                     }
-                }, datetime.getHours(), datetime.getMinutes(), true).show();
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
             }
         });
 
         view.findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                datetime = null;
                 dialog.dismiss();
             }
         });
@@ -90,7 +87,7 @@ public class MyTimeGetDialog {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                getTime.getTime(datetime);
+                getTime.getTime(calendar);
             }
         });
 
@@ -102,6 +99,6 @@ public class MyTimeGetDialog {
     }
 
     public static interface OnGetTimeListener {
-        void getTime(Date datetime);
+        void getTime(Calendar calendar);
     }
 }
