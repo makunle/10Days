@@ -274,11 +274,12 @@ public class DatabaseUtil {
 
     public Alarm getNearestAlarm() {
         Date date = new Date();
-        Alarm alarm = DataSupport.where("alarmTime > ?", String.valueOf(date.getTime())).order("alarmTime asc").findFirst(Alarm.class);
+        Alarm alarm = DataSupport.order("alarmTime asc").findFirst(Alarm.class);
         return alarm;
     }
 
     public Alarm getAlarmById(int alarmId) {
+        List<Alarm> alarms = DataSupport.findAll(Alarm.class);
         return DataSupport.where("id = ?", String.valueOf(alarmId)).findFirst(Alarm.class);
     }
 

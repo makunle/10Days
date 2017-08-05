@@ -91,7 +91,7 @@ public class MyToolbar extends LinearLayout {
 
         } else if(mType == SEARCH_TYPE){    //类型为搜索toobar
             normalLayout.setVisibility(View.GONE);
-            searchLayout.setVisibility(View.VISIBLE);
+//            searchLayout.setVisibility(View.VISIBLE);
 
             String hint = a.getString(R.styleable.MyToolbar_inputTextHint);
             if(!TextUtils.isEmpty(hint)){

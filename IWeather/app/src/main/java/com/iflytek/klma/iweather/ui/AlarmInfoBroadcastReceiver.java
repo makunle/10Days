@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +19,8 @@ import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
 import com.iflytek.klma.iweather.util.JsonUtil;
 import com.iflytek.klma.iweather.util.Util;
+
+import java.util.Date;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -34,35 +37,44 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
 
 
         if(!intent.getAction().equals(ALARM_ACTION)) return;
-        Intent showIntent = new Intent(context, WeatherShowActivity.class);
 
-        int bookmarkId = intent.getIntExtra(BOOKMARK_ID, -1);
-        if(bookmarkId == -1) return;
 
-        int alarmId = intent.getIntExtra(ALARM_ID, -1);
-        if(alarmId == -1) return;
+        Alarm nearestAlarm = DatabaseUtil.getInstance().getNearestAlarm();
+        Util.activeNearestAlarm(context);
 
-        Alarm alarm = DatabaseUtil.getInstance().getAlarmById(alarmId);
-        if(alarm == null) return;
+        if(nearestAlarm == null) return;
+        if(nearestAlarm.getAlarmTime() > new Date().getTime()) return;
 
-        WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookmarkById(bookmarkId);
+        WeatherBookmark bookmark = DatabaseUtil.getInstance().getWeatherBookmarkById(nearestAlarm.getWeatherBookmarkId());
+        if(bookmark == null) return;
+
         Weather weather = JsonUtil.handleHefengJson(bookmark.getWeatherData());
+        if(weather == null) return;
+
+        Intent showIntent = new Intent(context, WeatherShowActivity.class);
         showIntent.putExtra(WeatherShowActivity.COUNTY_NAME, weather.getCountyName());
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, showIntent, 0);
+
+        //使用第二个参数和最后一个参数，解决点击通知后跳转不正确问题
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, bookmark.getId(), showIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new Notification.Builder(context)
-                .setSmallIcon(R.mipmap.i_ico)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.notification_weather))
-                .setWhen(System.currentTimeMillis())
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentTitle(weather.getCountyName() + "天气 "+weather.getInfo())
                 .setContentText("温度："+weather.getNowTemperature() + " "+weather.getWindDirect()+" "+weather.getWindLevel())
+                .setTicker(weather.getCountyName() + "天气 "+weather.getInfo())
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.i_ico)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), Util.getWeatherImageResource(weather)))
+                .setLights(Color.GREEN, 1000,200)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .build();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, notification);
+        manager.notify(bookmark.getId(), notification);
+
         Log.d("Alarm", "onReceive: alarm once from broadcast done");
 
-        Util.activeNearestAlarm(context);
+
     }
 }

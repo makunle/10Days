@@ -66,7 +66,7 @@ public class HefengWeather implements Weather {
     }
 
     public String getUpdateTime() {
-        return HeWeather.get(0).basic.update.loc.split(" ")[1];
+        return HeWeather.get(0).basic.update.loc;
     }
 
     @Override

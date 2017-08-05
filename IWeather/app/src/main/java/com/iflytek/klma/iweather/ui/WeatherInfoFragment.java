@@ -126,20 +126,20 @@ public class WeatherInfoFragment extends Fragment {
         mWindDirect.setText(weather.getWindDirect());
         mWindLevel.setText(weather.getWindLevel());
 
-        mSportInfo.setText("运动建议："+weather.getSportInfo());
-        mCarWashInfo.setText("洗车建议："+weather.getCarWashInfo());
-        mComfortInfo.setText("舒适度："+weather.getComfortInfo());
+        mSportInfo.setText("运动建议：" + weather.getSportInfo());
+        mCarWashInfo.setText("洗车建议：" + weather.getCarWashInfo());
+        mComfortInfo.setText("舒适度：" + weather.getComfortInfo());
 
         mPM25.setText(weather.getPM25());
         mAirQuality.setText(weather.getAirQuality());
         mAQI.setText(weather.getAQI());
-        if(weather.getPM25().equals("-1")||
-                weather.getAirQuality().equals("-1")||
-                weather.getAQI().equals("-1")){
+        if (weather.getPM25().equals("-1") ||
+                weather.getAirQuality().equals("-1") ||
+                weather.getAQI().equals("-1")) {
             mAirLayout.setVisibility(View.GONE);
         }
 
-        mUpdateTime.setText(weather.getUpdateTime()+"更新");
+        mUpdateTime.setText(weather.getUpdateTime().split(" ")[1] + "更新");
 
         mWeatherPic.setImageResource(Util.getWeatherImageResource(weather));
 

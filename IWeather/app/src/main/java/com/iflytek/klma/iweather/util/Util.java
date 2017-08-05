@@ -61,11 +61,9 @@ public class Util {
         Intent intent = new Intent(context, AlarmInfoBroadcastReceiver.class);
         intent.setAction(AlarmInfoBroadcastReceiver.ALARM_ACTION);
 
-        intent.putExtra(AlarmInfoBroadcastReceiver.BOOKMARK_ID, nearestAlarm.getWeatherBookmarkId());
-        intent.putExtra(AlarmInfoBroadcastReceiver.ALARM_ID, nearestAlarm.getId());
-
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nearestAlarm.getAlarmTime(), sender);
         } else {
@@ -111,5 +109,7 @@ public class Util {
         }
 
         return weatherPicRcId;
+
+
     }
 }
