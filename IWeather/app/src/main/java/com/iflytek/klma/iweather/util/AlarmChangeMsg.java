@@ -11,11 +11,21 @@ public class AlarmChangeMsg {
     private int alarmId;  //对应的WeatherBookmark id
     private int type;           //事件类型
     private long alarmTime;
+    private boolean isRepeat;
+
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
+    }
 
     public AlarmChangeMsg(int alarmId, int type, long alarmTime, boolean repeat) {
         this.alarmId = alarmId;
         this.type = type;
         this.alarmTime = alarmTime;
+        this.isRepeat = repeat;
     }
 
     public int getAlarmId() {

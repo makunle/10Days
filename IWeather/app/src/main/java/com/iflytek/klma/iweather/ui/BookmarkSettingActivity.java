@@ -45,6 +45,7 @@ public class BookmarkSettingActivity extends AppCompatActivity {
 
         mBookmarkAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mCountyNameList);
         mBookmarkList.setAdapter(mBookmarkAdapter);
+        mBookmarkList.setFooterDividersEnabled(true);
         mBookmarkList.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

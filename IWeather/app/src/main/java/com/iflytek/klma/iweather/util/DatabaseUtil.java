@@ -220,6 +220,7 @@ public class DatabaseUtil {
         WeatherBookmark bookmark = getWeatherBookMarkByCountyName(countyName);
         if (bookmark == null) return false;
         bookmark.delete();
+
         EventBus.getDefault().post(new DBChangeMsg(bookmark.getId(), DBChangeMsg.DEL, countyName));
 
         List<Alarm> alarms = getAllAlarmByWeatherBookmarkId(bookmark.getId());
@@ -242,12 +243,13 @@ public class DatabaseUtil {
      * @return
      * @post AlarmChangeMsg
      */
-    public boolean addAlarm(long alarmTime, int bookmarkId) {
+    public boolean addAlarm(long alarmTime, int bookmarkId, boolean repeat) {
         if (getWeatherBookmarkById(bookmarkId) == null) return false;
 
         Alarm alarm = new Alarm();
         alarm.setAlarmTime(alarmTime);
         alarm.setWeatherBookmarkId(bookmarkId);
+        alarm.setRepeat(repeat);
         alarm.save();
 
         AlarmChangeMsg changeMsg = new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.ADD, alarm.getAlarmTime(), alarm.isRepeat());
@@ -279,7 +281,7 @@ public class DatabaseUtil {
         return alarm;
     }
 
-    public List<Alarm> getAllOutOfDateAlarm(){
+    public List<Alarm> getAllOutOfDateAlarm() {
         return DataSupport.where("alarmTime <= ?", String.valueOf(Calendar.getInstance().getTimeInMillis())).find(Alarm.class);
     }
 
@@ -295,11 +297,13 @@ public class DatabaseUtil {
         long now = Calendar.getInstance().getTimeInMillis();
         List<Alarm> alarms = DataSupport.where("alarmTime < ?", String.valueOf(now)).find(Alarm.class);
         for (Alarm alarm : alarms) {
-            if (alarm.isRepeat()) { //设置重复的添加下一次alarm,按天循环
-                addAlarm(alarm.getAlarmTime() + 1000 * 60 * 60 * 24, alarm.getWeatherBookmarkId());
-            }
             EventBus.getDefault().post(new AlarmChangeMsg(alarm.getId(), AlarmChangeMsg.DEL, alarm.getAlarmTime(), alarm.isRepeat()));
             alarm.delete();
+        }
+        for (Alarm alarm : alarms) {
+            if (alarm.isRepeat()) { //设置重复的添加下一次alarm,按天循环
+                addAlarm(alarm.getAlarmTime() + 1000 * 60 * 60 * 24, alarm.getWeatherBookmarkId(), true);
+            }
         }
     }
 }

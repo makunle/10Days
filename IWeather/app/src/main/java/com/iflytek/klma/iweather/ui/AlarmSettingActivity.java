@@ -67,11 +67,12 @@ public class AlarmSettingActivity extends AppCompatActivity {
         mAlarmItems = new ArrayList<AlarmItem>();
         List<Alarm> alarms = DatabaseUtil.getInstance().getAllAlarmByWeatherBookmarkId(mBookmarkId);
         for (Alarm alarm : alarms) {
-            mAlarmItems.add(new AlarmItem(alarm.getId(), alarm.getAlarmTime()));
+            mAlarmItems.add(new AlarmItem(alarm.getId(), alarm.getAlarmTime(), alarm.isRepeat()));
         }
         Log.d(TAG, "onCreate: bookmark id: " + mBookmarkId +" list size : " + mAlarmItems.size());
         mAlarmItemAdapter = new MyAlarmItemAdapter(this, R.layout.item_alarm, mAlarmItems);
         mAlarmListView.setAdapter(mAlarmItemAdapter);
+        mAlarmListView.setFooterDividersEnabled(true);
 
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
         mToolbar.getNormalLeft().setOnClickListener(buttonOnClieckListener);
@@ -89,7 +90,7 @@ public class AlarmSettingActivity extends AppCompatActivity {
         switch (msg.getType()){
             case AlarmChangeMsg.ADD:
                 //ui listview刷新
-                mAlarmItems.add(new AlarmItem(msg.getAlarmId(), msg.getAlarmTime()));
+                mAlarmItems.add(new AlarmItem(msg.getAlarmId(), msg.getAlarmTime(), msg.isRepeat()));
                 Util.activeNearestAlarm(AlarmSettingActivity.this);
                 break;
             case AlarmChangeMsg.DEL:
@@ -127,11 +128,11 @@ public class AlarmSettingActivity extends AppCompatActivity {
                     //添加一个提醒
                     MyTimeGetDialog dialog = new MyTimeGetDialog(AlarmSettingActivity.this, new MyTimeGetDialog.OnGetTimeListener() {
                         @Override
-                        public void getTime(Calendar calendar) {
-                            if(calendar.compareTo(Calendar.getInstance()) < 0){
+                        public void getTime(Calendar calendar, boolean repeat) {
+                            if(!repeat && calendar.compareTo(Calendar.getInstance()) < 0){
                                 Toast.makeText(AlarmSettingActivity.this, "设置的时间即将过期或已过期，请重新设置", Toast.LENGTH_LONG).show();
                             }else {
-                                DatabaseUtil.getInstance().addAlarm(calendar.getTimeInMillis(), mBookmarkId);
+                                DatabaseUtil.getInstance().addAlarm(calendar.getTimeInMillis(), mBookmarkId, repeat);
                             }
                         }
                     });
@@ -169,7 +170,7 @@ public class AlarmSettingActivity extends AppCompatActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.alarmInfo.setText(alarmItem.getTime());
+            viewHolder.alarmInfo.setText(alarmItem.getTime() + (alarmItem.isRepeat ? "            重复":""));
             viewHolder.deleteButton.setTag(R.id.alarm_delete, alarmItem.getAlarmId());
             viewHolder.deleteButton.setOnClickListener(deleteButtonClickListener);
 
@@ -199,12 +200,23 @@ public class AlarmSettingActivity extends AppCompatActivity {
 
         private int alarmId;
         private String time;
+        private boolean isRepeat;
 
-        public AlarmItem(int alarmId, long time) {
+        public boolean isRepeat() {
+            return isRepeat;
+        }
+
+        public void setRepeat(boolean repeat) {
+            isRepeat = repeat;
+        }
+
+        public AlarmItem(int alarmId, long time, boolean isRepeat) {
             this.alarmId = alarmId;
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(time);
-            this.time = Util.getDayShow(calendar);
+            this.time = Util.getDayShow(calendar, true);
+            this.isRepeat = isRepeat;
+
         }
 
         public int getAlarmId() {

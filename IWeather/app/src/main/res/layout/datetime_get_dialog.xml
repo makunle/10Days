@@ -31,14 +31,29 @@
             android:background="#bbbfc7"
             android:text="TextView" />
 
-        <Button
-            android:id="@+id/get_date"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fff"
-            android:gravity="left|center_vertical"
-            android:paddingLeft="20dp"
-            android:text="选择日期" />
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/get_date"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="20dp"
+                android:text="选择日期" />
+
+            <CheckBox
+                android:id="@+id/get_repeat"
+                android:text="重复"
+                android:layout_marginRight="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
 
         <TextView
             android:layout_width="match_parent"

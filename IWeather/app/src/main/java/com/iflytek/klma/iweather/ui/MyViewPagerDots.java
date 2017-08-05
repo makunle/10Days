@@ -66,7 +66,7 @@ public class MyViewPagerDots extends LinearLayout {
                 lp.setMargins(12, 0, 12, 0);
                 iv.setLayoutParams(lp);
 
-                iv.setImageResource(R.drawable.dot_not_select);
+                iv.setImageResource(R.drawable.dot_select);
 
                 mDots.add(iv);
                 mContainer.addView(iv);
@@ -87,12 +87,12 @@ public class MyViewPagerDots extends LinearLayout {
         if (mPosition < 0 || mPosition > mDots.size() - 1) {
             mPosition = position;
         }else {
-            mDots.get(mPosition).setImageResource(R.drawable.dot_not_select);
+            mDots.get(mPosition).setImageResource(R.drawable.dot_select);
         }
         if (position < 0 || position > mDots.size() - 1){
             return;
         }else {
-            mDots.get(position).setImageResource(R.drawable.dot_select);
+            mDots.get(position).setImageResource(R.drawable.dot_not_select);
         }
         mPosition = position;
 //        for(ImageView iv : mDots){

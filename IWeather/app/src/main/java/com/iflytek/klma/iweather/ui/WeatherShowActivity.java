@@ -1,9 +1,11 @@
 package com.iflytek.klma.iweather.ui;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -33,6 +35,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class WeatherShowActivity extends AppCompatActivity {
 
@@ -100,10 +103,12 @@ public class WeatherShowActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(countyName)) countyName = "";
         setPageToCountyByName(countyName);
 
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            |View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        getWindow().setStatusBarColor(0x55000000);
+        if(Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(0x55000000);
+        }
     }
 
     @Override
@@ -138,6 +143,10 @@ public class WeatherShowActivity extends AppCompatActivity {
                 }
                 pagerAdapter.notifyDataSetChanged();
                 setPageToCountyByName(mToolbar.getTitleTextView().getText().toString());
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.cancel(msg.getBookMarkId());
+
                 break;
             case DBChangeMsg.SET:
                 Log.d(TAG, "onDatabaseDataChanged: + set : " + msg.getBookMarkId());

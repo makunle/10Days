@@ -75,23 +75,27 @@ public class Util {
         Log.d("Alarm", "set alarm time: " + nearestAlarm.getAlarmTime() + " " + cn);
     }
 
-    public static String getDayShow(Calendar calendar){
-        String dateShow = longTime2String(calendar.getTime().getTime());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(" MM-dd");
+    public static String getDayShow(Calendar calendar, boolean needTime){
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("HH:mm EE");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EE");
 
+        String dateShow = dateFormat.format(calendar.getTime());
+        if(needTime) dateShow = datetimeFormat.format(calendar.getTime());
+
+        SimpleDateFormat datesFormat = new SimpleDateFormat("MM-dd ");
         int deltaDay = calendar.get(Calendar.DAY_OF_YEAR) - Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
         switch (deltaDay){
             case 0:
-                dateShow += " 今天";
+                dateShow = "今天 " + dateShow;
                 break;
             case 1:
-                dateShow += " 明天";
+                dateShow = "明天 " + dateShow;
                 break;
             case 2:
-                dateShow += " 后天";
+                dateShow = "后天 " + dateShow;
                 break;
             default:
-                dateShow += dateFormat.format(calendar.getTime());
+                dateShow = datesFormat.format(calendar.getTime())  + dateShow;
                 break;
         }
         return dateShow;

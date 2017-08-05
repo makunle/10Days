@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
@@ -43,12 +45,20 @@ public class MyTimeGetDialog {
 
         final Button timebutton = (Button) view.findViewById(R.id.get_time);
         final Button datebutton = (Button) view.findViewById(R.id.get_date);
+        final CheckBox repeat = (CheckBox) view.findViewById(R.id.get_repeat);
         final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd EE");
 
-        timebutton.setText("选择日期：" + Util.getDayShow(calendar));
-        datebutton.setText("选择时间：" + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + (calendar.get(Calendar.HOUR_OF_DAY) > 12 ? " 下午" : " 上午"));
+        datebutton.setText("选择日期：" + Util.getDayShow(calendar, false));
+        timebutton.setText("选择时间：" + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + (calendar.get(Calendar.HOUR_OF_DAY) > 12 ? " 下午" : " 上午"));
 
-        timebutton.setOnClickListener(new View.OnClickListener() {
+        repeat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                datebutton.setEnabled(!isChecked);
+            }
+        });
+
+        datebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
@@ -57,12 +67,13 @@ public class MyTimeGetDialog {
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, month);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        timebutton.setText("选择日期：" + Util.getDayShow(calendar));
+
+                        datebutton.setText("选择日期：" + Util.getDayShow(calendar, false));
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-        datebutton.setOnClickListener(new View.OnClickListener() {
+        timebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new TimePickerDialog(context, AlertDialog.THEME_HOLO_LIGHT, new TimePickerDialog.OnTimeSetListener() {
@@ -70,7 +81,7 @@ public class MyTimeGetDialog {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                         calendar.set(Calendar.MINUTE, minute);
-                        datebutton.setText("选择时间：" + hourOfDay + ":" + minute + (hourOfDay > 12 ? " 下午" : " 上午"));
+                        timebutton.setText("选择时间：" + hourOfDay + ":" + minute + (hourOfDay > 12 ? " 下午" : " 上午"));
                     }
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
             }
@@ -87,7 +98,7 @@ public class MyTimeGetDialog {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                getTime.getTime(calendar);
+                getTime.getTime(calendar, repeat.isChecked());
             }
         });
 
@@ -99,6 +110,6 @@ public class MyTimeGetDialog {
     }
 
     public static interface OnGetTimeListener {
-        void getTime(Calendar calendar);
+        void getTime(Calendar calendar, boolean repeat);
     }
 }

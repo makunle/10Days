@@ -36,14 +36,15 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("Alarm", "onReceive: alarm once from broadcast begin");
 
-
-        if(!intent.getAction().equals(ALARM_ACTION)) return;
-
         //处理所有的过期alarm，这样同时可以有多个alarm被触发
         List<Alarm> alarmList = DatabaseUtil.getInstance().getAllOutOfDateAlarm();
-        for (Alarm nearestAlarm: alarmList) {
-            Util.activeNearestAlarm(context);
+        Util.activeNearestAlarm(context);
 
+        if (!intent.getAction().equals(ALARM_ACTION)) {
+            return;
+        }
+
+        for (Alarm nearestAlarm : alarmList) {
             if (nearestAlarm == null) continue;
             if (nearestAlarm.getAlarmTime() > new Date().getTime()) continue;
 
@@ -59,14 +60,20 @@ public class AlarmInfoBroadcastReceiver extends BroadcastReceiver {
             //使用第二个参数和最后一个参数，解决点击通知后跳转不正确问题
             PendingIntent pendingIntent = PendingIntent.getActivity(context, bookmark.getId(), showIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            String infoText = weather.getCountyName() + " " + weather.getInfo();
+
+            String tempText = "温度: " + weather.getNowTemperature() +
+                    "°  (" + weather.getMinTemperature() + "° ~ " + weather.getMaxTemperature() + "°)  ";
+
+            if (!weather.getAirQuality().equals("-1")) tempText += "空气" + weather.getAirQuality();
+            tempText += "     更新时间：" + weather.getUpdateTime().split(" ")[1];
+
             Notification notification = new Notification.Builder(context)
-                    .setContentTitle(weather.getCountyName() + "天气 " + weather.getInfo())
-                    .setContentText("温度：" + weather.getNowTemperature() + " " + weather.getWindDirect() + " " + weather.getWindLevel())
-                    .setTicker(weather.getCountyName() + "天气 " + weather.getInfo())
+                    .setContentTitle(infoText)
+                    .setContentText(tempText)
+                    .setTicker(weather.getCountyName() + weather.getInfo())
                     .setWhen(System.currentTimeMillis())
-                    .setSmallIcon(R.mipmap.i_ico)
-                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), Util.getWeatherImageResource(weather)))
-                    .setLights(Color.GREEN, 1000, 200)
+                    .setSmallIcon(Util.getWeatherImageResource(weather))
                     .setDefaults(NotificationCompat.DEFAULT_ALL)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)

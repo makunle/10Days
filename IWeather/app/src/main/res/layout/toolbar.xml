@@ -107,7 +107,7 @@
             android:scaleType="centerInside"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:src="@drawable/toobar_close_dark" />
+            android:src="@drawable/toolbar_speak_dark" />
 
     </LinearLayout>
 

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.litepal.LitePal;
 
@@ -19,6 +20,7 @@ public class IWeatherApplication extends Application {
         LitePal.initialize(getApplicationContext());   //litepal数据库初始化
         SpeechUtility.createUtility(getApplicationContext(), getString(R.string.appid)); //语音理解sdk初始化
         DatabaseUtil.getInstance().firstTimeInitDataBase(this); //初次运行复制数据库
+        CrashReport.initCrashReport(getApplicationContext(), "128c0865a4", false);
 
     }
 }

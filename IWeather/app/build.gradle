@@ -39,4 +39,5 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     testCompile 'junit:junit:4.12'
     compile files('libs/Msc.jar')
+    compile 'com.tencent.bugly:crashreport:2.6.5'
 }

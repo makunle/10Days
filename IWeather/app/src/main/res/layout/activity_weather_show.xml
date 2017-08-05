@@ -1,48 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bk"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="com.iflytek.klma.iweather.ui.WeatherShowActivity">
+    android:layout_height="match_parent">
 
-    <com.iflytek.klma.iweather.ui.MyToolbar
-        android:id="@+id/toolbar"
+    <ImageView
+        android:src="@drawable/bk5"
+        android:scaleType="centerCrop"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:fitsSystemWindows="true"
-        app:showLeftButton="false"
-        app:toolbarBackground="#5000" />
+        android:layout_height="match_parent" />
 
-    <com.iflytek.klma.iweather.ui.VerticalSwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
+    <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        tools:context="com.iflytek.klma.iweather.ui.WeatherShowActivity">
 
-        <LinearLayout
+        <com.iflytek.klma.iweather.ui.MyToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:fitsSystemWindows="true"
+            app:showLeftButton="false"
+            app:toolbarBackground="#5000" />
+
+        <com.iflytek.klma.iweather.ui.VerticalSwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            android:orientation="vertical">
+            android:fitsSystemWindows="true">
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/view_page"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                android:overScrollMode="never"
-                android:scrollbars="none" />
+                android:orientation="vertical">
 
-            <com.iflytek.klma.iweather.ui.MyViewPagerDots
-                android:id="@+id/dots_page"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:fitsSystemWindows="true" />
-        </LinearLayout>
-    </com.iflytek.klma.iweather.ui.VerticalSwipeRefreshLayout>
-</LinearLayout>
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_page"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:fitsSystemWindows="true"
+                    android:overScrollMode="never"
+                    android:scrollbars="none" />
+
+                <com.iflytek.klma.iweather.ui.MyViewPagerDots
+                    android:id="@+id/dots_page"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:fitsSystemWindows="true" />
+            </LinearLayout>
+        </com.iflytek.klma.iweather.ui.VerticalSwipeRefreshLayout>
+    </LinearLayout>
+</FrameLayout>
+
