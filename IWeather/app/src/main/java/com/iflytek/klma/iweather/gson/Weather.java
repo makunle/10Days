@@ -62,4 +62,6 @@ public interface Weather {
     public String getSportInfo();
 
     public String getAQI();
+
+    public String getExtraInfo();
 }

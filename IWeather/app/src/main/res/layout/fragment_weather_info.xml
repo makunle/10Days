@@ -10,25 +10,30 @@
         android:layout_height="match_parent"
         android:overScrollMode="never">
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#4000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#c86cce86"
+                android:background="#5000"
 
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
@@ -52,11 +57,11 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
-
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    android:layout_height="wrap_content">
+
+                    android:layout_marginLeft="20dp"
+                    android:gravity="center_vertical">
 
 
                     <TextView
@@ -96,9 +101,9 @@
                         android:textSize="12sp" />
 
                     <TextView
-                        android:layout_weight="1"
                         android:layout_width="0dp"
-                        android:layout_height="0dp" />
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
 
                     <TextView
                         android:id="@+id/update_time"
@@ -117,9 +122,13 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#4000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="#c8b175f5"
+                android:background="#5000"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -168,11 +177,15 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#4000" />
+
+            <LinearLayout
                 android:id="@+id/air_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="#c8759ee9"
+                android:background="#5000"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -269,9 +282,13 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#4000" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="#c82d9ea7"
+                android:background="#5000"
                 android:orientation="vertical">
 
                 <FrameLayout

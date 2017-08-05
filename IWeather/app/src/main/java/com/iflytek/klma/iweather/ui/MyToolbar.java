@@ -41,6 +41,7 @@ public class MyToolbar extends LinearLayout {
 
     private LinearLayout normalLayout;
     private LinearLayout searchLayout;
+    private LinearLayout mainLayout;
 
     public MyToolbar(Context context) {
         this(context, null);
@@ -58,6 +59,11 @@ public class MyToolbar extends LinearLayout {
                 attrs, R.styleable.MyToolbar, defStyleAttr, 0);
 
         mType = a.getInt(R.styleable.MyToolbar_titleType, 0);
+
+        int color = a.getColor(R.styleable.MyToolbar_toolbarBackground, -1);
+        if(color != -1){
+            mainLayout.setBackgroundColor(color);
+        }
 
         if(mType == NORMAL_TYPE)    //类型为一般导航toolbar
         {
@@ -91,7 +97,7 @@ public class MyToolbar extends LinearLayout {
 
         } else if(mType == SEARCH_TYPE){    //类型为搜索toobar
             normalLayout.setVisibility(View.GONE);
-//            searchLayout.setVisibility(View.VISIBLE);
+            searchLayout.setVisibility(View.VISIBLE);
 
             String hint = a.getString(R.styleable.MyToolbar_inputTextHint);
             if(!TextUtils.isEmpty(hint)){
@@ -125,6 +131,7 @@ public class MyToolbar extends LinearLayout {
 
         normalLayout = (LinearLayout) findViewById(R.id.toolbar_type_normal);
         searchLayout = (LinearLayout) findViewById(R.id.toolbar_type_search);
+        mainLayout = (LinearLayout) findViewById(R.id.main_layout);
     }
 
 //    public ImageButton getNormalLeftButton() {

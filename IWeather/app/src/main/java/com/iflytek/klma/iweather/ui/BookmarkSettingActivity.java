@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
@@ -94,17 +96,30 @@ public class BookmarkSettingActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                //返回
                 case R.id.toolbar_normal_left:
                     if (DatabaseUtil.getInstance().getAllWeatherBookMark().size() <= 0) {
                         startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
                     }
                     finish();
                     break;
+
+                //添加
                 case R.id.toolbar_normal_right:
-                    startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
+                    if (DatabaseUtil.getInstance().getAllWeatherBookMark().size() >= 10) {
+                        Toast.makeText(BookmarkSettingActivity.this, "最多添加10个城市", Toast.LENGTH_SHORT).show();
+                    } else {
+                        startActivity(new Intent(BookmarkSettingActivity.this, CountyChooseActivity.class));
+                    }
                     break;
                 default:
             }
         }
     };
+
+
+    @Override
+    public void onBackPressed() {
+        mToolBar.getNormalLeft().performClick();
+    }
 }

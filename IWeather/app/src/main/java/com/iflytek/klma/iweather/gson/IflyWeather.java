@@ -9,11 +9,11 @@ import java.util.List;
  * 2、data.result(0).city:城市名
  */
 
-public class IflyWeather implements Weather{
+public class IflyWeather implements Weather {
 
     @Override
     public String getInfo() {
-        return null;
+        return answer.text;
     }
 
     @Override
@@ -59,13 +59,13 @@ public class IflyWeather implements Weather{
      * sid : sch337fe700@ch47750cd78045477500
      */
 
-    public String getCountyName(){
+    public String getCountyName() {
         return data.result.get(0).city;
     }
 
     @Override
     public boolean isDataUsable() {
-        return false;
+        return "DataValid".equals(dialog_stat);
     }
 
     @Override
@@ -96,6 +96,11 @@ public class IflyWeather implements Weather{
     @Override
     public String getAQI() {
         return null;
+    }
+
+    @Override
+    public String getExtraInfo() {
+        return text;
     }
 
     private DataBean data;

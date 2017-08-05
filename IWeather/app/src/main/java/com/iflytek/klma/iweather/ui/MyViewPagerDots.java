@@ -62,8 +62,8 @@ public class MyViewPagerDots extends LinearLayout {
             for (int i = 0; i < times; i++) {
                 ImageView iv = new ImageView(mContext);
 
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(15, 15);
-                lp.setMargins(15, 0, 15, 0);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(12, 12);
+                lp.setMargins(12, 0, 12, 0);
                 iv.setLayoutParams(lp);
 
                 iv.setImageResource(R.drawable.dot_not_select);

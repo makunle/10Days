@@ -38,8 +38,8 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <Button
                 android:id="@+id/btn_speech_search"
@@ -56,17 +56,14 @@
         android:layout_height="match_parent"
         android:visibility="gone"></ListView>
 
-    <LinearLayout
+
+    <TextView
         android:id="@+id/no_result"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="wrap_content"
+        android:text="无查询结果" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="无查询结果" />
 
-    </LinearLayout>
 </LinearLayout>

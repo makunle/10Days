@@ -279,6 +279,10 @@ public class DatabaseUtil {
         return alarm;
     }
 
+    public List<Alarm> getAllOutOfDateAlarm(){
+        return DataSupport.where("alarmTime <= ?", String.valueOf(Calendar.getInstance().getTimeInMillis())).find(Alarm.class);
+    }
+
     public Alarm getAlarmById(int alarmId) {
         List<Alarm> alarms = DataSupport.findAll(Alarm.class);
         return DataSupport.where("id = ?", String.valueOf(alarmId)).findFirst(Alarm.class);

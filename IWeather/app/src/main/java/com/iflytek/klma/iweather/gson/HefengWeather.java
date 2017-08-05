@@ -121,6 +121,11 @@ public class HefengWeather implements Weather {
         }
     }
 
+    @Override
+    public String getExtraInfo() {
+        return null;
+    }
+
     public List<HeWeatherBean> getHeWeather() {
         return HeWeather;
     }

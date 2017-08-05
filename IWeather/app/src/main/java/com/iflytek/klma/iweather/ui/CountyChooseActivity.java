@@ -1,7 +1,6 @@
 package com.iflytek.klma.iweather.ui;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,14 +27,14 @@ import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechUnderstander;
 import com.iflytek.cloud.SpeechUnderstanderListener;
+import com.iflytek.cloud.TextUnderstander;
+import com.iflytek.cloud.TextUnderstanderListener;
 import com.iflytek.cloud.UnderstanderResult;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.klma.iweather.R;
 import com.iflytek.klma.iweather.db.County;
-import com.iflytek.klma.iweather.gson.IflyWeather;
 import com.iflytek.klma.iweather.gson.Weather;
 import com.iflytek.klma.iweather.util.AndroidUtil;
 import com.iflytek.klma.iweather.util.DatabaseUtil;
@@ -64,11 +63,12 @@ public class CountyChooseActivity extends AppCompatActivity {
     private RecyclerView mCountyListRv;   //城市列表
     private MyToolbar mToolbar;
     private ListView mSearchedListView;
-    private LinearLayout mNoResult;
+    private TextView mNoResult;
     private LinearLayout mSearchBlock;
 
-    private SpeechUnderstander mSpeechUnderstander;  //语音搜索理解器
-    private RecognizerDialog recognizerDialog;
+    //    private SpeechUnderstander mSpeechUnderstander;  //语音搜索理解器
+    private TextUnderstander mTextUnderstander;       //文字理解
+    private RecognizerDialog mRecognizerDialog;       //听写dialog
 
     private Toast toast;
 
@@ -86,7 +86,7 @@ public class CountyChooseActivity extends AppCompatActivity {
         mCountyListRv = (RecyclerView) findViewById(R.id.rv_city_list);
         mToolbar = (MyToolbar) findViewById(R.id.toolbar);
         mSearchedListView = (ListView) findViewById(R.id.lv_search_result);
-        mNoResult = (LinearLayout) findViewById(R.id.no_result);
+        mNoResult = (TextView) findViewById(R.id.no_result);
         mSearchBlock = (LinearLayout) findViewById(R.id.search_block);
 
         //热门城市列表，使用RecyclerView的瀑布布局方式展现
@@ -95,13 +95,15 @@ public class CountyChooseActivity extends AppCompatActivity {
         HotCountyAdapter adapter = new HotCountyAdapter(DatabaseUtil.getInstance().getHotCounties());
         mCountyListRv.setAdapter(adapter);
 
-        mSpeechUnderstander = SpeechUnderstander.createUnderstander(this, initListener);
-        recognizerDialog = new RecognizerDialog(this, initListener);
+//        mSpeechUnderstander = SpeechUnderstander.createUnderstander(this, initListener);
+        mTextUnderstander = TextUnderstander.createTextUnderstander(this, initListener);
+        mRecognizerDialog = new RecognizerDialog(this, initListener);
 
         toast = Toast.makeText(CountyChooseActivity.this, "", Toast.LENGTH_SHORT);
 
 //        mSearchBtn.setOnClickListener(searchOnClickListener);
-        mSpeechSearchBtn.setOnClickListener(searchOnClickListener);
+//        mSpeechSearchBtn.setOnClickListener(searchOnClickListener);
+        mSpeechSearchBtn.setVisibility(View.GONE);
 
         mToolbar.getInputEditText().addTextChangedListener(texInputWatcher);
         mToolbar.getSearchLeftButton().setOnClickListener(toolbarButtonClickListener);
@@ -133,11 +135,26 @@ public class CountyChooseActivity extends AppCompatActivity {
                     finish();
                     break;
                 case R.id.toolbar_right_search:
-                    mToolbar.getInputEditText().setText("");
+                    String tag = (String) mToolbar.getSearchRightButton().getTag();
+                    if ("clear".equals(tag)) {//清除輸入框
+                        mToolbar.getInputEditText().setText("");
+                    } else {//语音搜索
+                        if (AndroidUtil.checkAndGetPermission(CountyChooseActivity.this, Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_CODE)) {
+                            recognizer();
+                        }
+                    }
                     break;
             }
         }
     };
+
+    private void searchResultInfo(String info) {
+        mSearchBlock.setVisibility(View.GONE);
+        mNoResult.setVisibility(View.VISIBLE);
+        mSearchedListView.setVisibility(View.GONE);
+        mNoResult.setText(info);
+    }
+
     /**
      * 搜索框文字改变事件响应
      */
@@ -154,15 +171,19 @@ public class CountyChooseActivity extends AppCompatActivity {
         public void afterTextChanged(Editable s) {
             String str = s.toString();
 
+            //输入框为空时，显示语音搜索按钮，显示热门城市
             if (TextUtils.isEmpty(str)) {
-                mToolbar.getSearchRightButton().setVisibility(View.INVISIBLE);
+                mToolbar.getSearchRightButton().setImageResource(R.drawable.toolbar_speak_dark);
+                mToolbar.getSearchRightButton().setTag("speek");
 
                 mSearchBlock.setVisibility(View.VISIBLE);
                 mNoResult.setVisibility(View.GONE);
                 mSearchedListView.setVisibility(View.GONE);
                 return;
             } else {
-                mToolbar.getSearchRightButton().setVisibility(View.VISIBLE);
+                //输入框不为空时，显示清空按钮
+                mToolbar.getSearchRightButton().setImageResource(R.drawable.toobar_close_dark);
+                mToolbar.getSearchRightButton().setTag("clear");
                 mSearchBlock.setVisibility(View.GONE);
                 mNoResult.setVisibility(View.GONE);
                 mSearchedListView.setVisibility(View.VISIBLE);
@@ -170,6 +191,7 @@ public class CountyChooseActivity extends AppCompatActivity {
 
             final List<County> counties = DatabaseUtil.getInstance().getAllCountyNameLike(str);
             if (counties != null && counties.size() > 0) {
+                //搜索到城市时，显示列表
                 mSearchedListView.setVisibility(View.VISIBLE);
                 mNoResult.setVisibility(View.GONE);
 
@@ -186,8 +208,8 @@ public class CountyChooseActivity extends AppCompatActivity {
                 }
                 mSearchedAdapter.notifyDataSetChanged();
             } else {
-                mSearchedListView.setVisibility(View.GONE);
-                mNoResult.setVisibility(View.VISIBLE);
+                //无搜索结果时显示提示
+                searchResultInfo("无搜索结果");
             }
         }
     };
@@ -200,63 +222,93 @@ public class CountyChooseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mSpeechUnderstander != null) {
-            mSpeechUnderstander.cancel();
-            mSpeechUnderstander.destroy();
+//        if (mSpeechUnderstander != null) {
+//            mSpeechUnderstander.cancel();
+//            mSpeechUnderstander.destroy();
+//        }
+        if (mTextUnderstander != null) {
+            mTextUnderstander.cancel();
+            mTextUnderstander.destroy();
         }
     }
+
+
+    private void recognizer() {
+        if (null == mTextUnderstander) {
+            // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
+            showTip("创建对象失败，请确认 libmsc.so 放置正确，且有调用 createUtility 进行初始化");
+            return;
+        }
+        setParam();
+        mRecognizerDialog.setListener(mRocognizeerDialogListener);
+        mRecognizerDialog.show();
+    }
+
 
     /**
-     * 搜索按钮事件响应
+     * 听写监听器。
      */
-    private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
+    private RecognizerDialogListener mRocognizeerDialogListener = new RecognizerDialogListener() {
+
         @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-//                case R.id.btn_search:
-//                    String input = mCityInputEt.getText().toString();
-//                    if (!TextUtils.isEmpty(input)) {
-//                        County county = DatabaseUtil.getInstance().getCountyByName(input);
-//                        if (county != null) {
-//                            DatabaseUtil.getInstance().addWeatherBookMark(input);
-//                            startActivity(new Intent(CountyChooseActivity.this, WeatherShowActivity.class));
-//                            return;
-//                        }
-//                    }
-//                    Toast.makeText(CountyChooseActivity.this, "输入的城市名不正确", Toast.LENGTH_SHORT).show();
-//                    break;
-                case R.id.btn_speech_search:
-                    if (null == mSpeechUnderstander) {
-                        // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
-                        showTip("创建对象失败，请确认 libmsc.so 放置正确，且有调用 " +
-                                "createUtility 进行初始化");
-                        return;
+        public void onResult(RecognizerResult recognizerResult, boolean b) {
+            String resultText = JsonUtil.parseIatResult(recognizerResult.getResultString());
+            if (!TextUtils.isEmpty(resultText)) {
+                if (mTextUnderstander.isUnderstanding()) {
+                    mTextUnderstander.cancel();
+                } else {
+                    int ret = mTextUnderstander.understandText(resultText, textUnderstanderListener);
+                    if (ret != 0) {
+                        showTip("语义理解失败");
                     }
-                    if (AndroidUtil.checkAndGetPermission(CountyChooseActivity.this, Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_CODE)) {
-                        doSpeedUnderstand();
-                    }
-                    break;
+                }
             }
+        }
+
+        @Override
+        public void onError(SpeechError speechError) {
+            Log.d(TAG, "onError: textunderstand error: " + speechError.getErrorDescription());
         }
     };
+    /**
+     * 搜索按钮事件响应,首先获取权限
+     */
+//    private View.OnClickListener searchOnClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            switch (v.getId()) {
+//                case R.id.btn_speech_search:
+//                    if (null == mSpeechUnderstander) {
+//                        // 创建单例失败，与 21001 错误为同样原因，参考 http://bbs.xfyun.cn/forum.php?mod=viewthread&tid=9688
+//                        showTip("创建对象失败，请确认 libmsc.so 放置正确，且有调用 " +
+//                                "createUtility 进行初始化");
+//                        return;
+//                    }
+//                    if (AndroidUtil.checkAndGetPermission(CountyChooseActivity.this, Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_CODE)) {
+//                        doSpeedUnderstand();
+//                    }
+//                    break;
+//            }
+//        }
+//    };
 
-    private void doSpeedUnderstand() {
-        setSpeechUnderstanderParams();
-        if (mSpeechUnderstander.isUnderstanding()) {
-            mSpeechUnderstander.stopUnderstanding();
-            showTip("停止录音");
-        } else {
-//                        recognizerDialog.setListener(mRecognizerDialogListener);
-//                        recognizerDialog.show();
-            int ret = mSpeechUnderstander.startUnderstanding(speechUnderstanderListener);
-//                        int ret = 1;
-            if (ret != 0) {
-                showTip("语义理解失败，错误码：" + ret);
-            } else {
-                showTip("请开始说话...");
-            }
-        }
-    }
+//    private void doSpeedUnderstand() {
+//        setSpeechUnderstanderParams();
+//        if (mSpeechUnderstander.isUnderstanding()) {
+//            mSpeechUnderstander.stopUnderstanding();
+//            showTip("停止录音");
+//        } else {
+////                        mRecognizerDialog.setListener(mRecognizerDialogListener);
+////                        mRecognizerDialog.show();
+//            int ret = mSpeechUnderstander.startUnderstanding(speechUnderstanderListener);
+////                        int ret = 1;
+//            if (ret != 0) {
+//                showTip("语义理解失败，错误码：" + ret);
+//            } else {
+//                showTip("请开始说话...");
+//            }
+//        }
+//    }
 
     /**
      * 听写UI监听器
@@ -284,6 +336,52 @@ public class CountyChooseActivity extends AppCompatActivity {
         }
     };
 
+    private TextUnderstanderListener textUnderstanderListener = new TextUnderstanderListener() {
+        @Override
+        public void onResult(UnderstanderResult understanderResult) {
+            if (null != understanderResult) {
+                String res = understanderResult.getResultString();
+                Log.d(TAG, "onResult: " + res);
+                if (!TextUtils.isEmpty(res) && 0 == getResultError(res)) {
+                    Weather weather = JsonUtil.handleIflyWeatherJson(res);
+                    if (weather != null) {
+                        if (!weather.isDataUsable()) {
+                            searchResultInfo(weather.getInfo());
+                            return;
+                        }
+                        searchResultInfo("正在查询" + weather.getCountyName() + "的天气...");
+                        final String countyName = weather.getCountyName();
+                        if (DatabaseUtil.getInstance().getCountyByName(countyName) == null) {
+                            showTip("不支持当前城市");
+                        } else {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    DatabaseUtil.getInstance().addWeatherBookMark(countyName);
+                                    WeatherShowActivity.startMe(CountyChooseActivity.this, countyName);
+                                }
+                            }).start();
+
+                            return;
+                        }
+                    }
+                }
+
+            }
+            showTip("语义理解失败");
+        }
+
+        @Override
+        public void onError(SpeechError speechError) {
+
+        }
+    };
+
     /**
      * 语音理解listener
      */
@@ -302,7 +400,7 @@ public class CountyChooseActivity extends AppCompatActivity {
         }
 
         /**
-         * 根据语音添加城市
+         * 根据理解的语义添加城市
          * @param understanderResult
          */
         @Override
@@ -342,23 +440,22 @@ public class CountyChooseActivity extends AppCompatActivity {
     /**
      * 语音模块参数配置
      */
-    private void setSpeechUnderstanderParams() {
-        // 设置语言
-        mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
-        // 设置语言区域
-        mSpeechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
-        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, "4000");
-        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
-        mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
-        // 设置标点符号，默认：1（有标点）
-        mSpeechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
-
-        mSpeechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState() + "/msc/sud.wav");
-
-    }
-
+//    private void setSpeechUnderstanderParams() {
+//        // 设置语言
+//        mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+//        // 设置语言区域
+//        mSpeechUnderstander.setParameter(SpeechConstant.ACCENT, "mandarin");
+//        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
+//        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, "4000");
+//        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
+//        mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, "1000");
+//        // 设置标点符号，默认：1（有标点）
+//        mSpeechUnderstander.setParameter(SpeechConstant.ASR_PTT, "0");
+//
+//        mSpeechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+//        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState() + "/msc/sud.wav");
+//
+//    }
     private int getResultError(final String resultText) {
         int error = 0;
         try {
@@ -380,10 +477,48 @@ public class CountyChooseActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == RECORD_AUDIO_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                doSpeedUnderstand();
+//                doSpeedUnderstand();
+                recognizer();
             } else {
                 showTip("未获得录音权限，不能执行语音搜索操作");
             }
         }
+    }
+
+
+    /**
+     * 参数设置
+     *
+     * @return
+     */
+    public void setParam() {
+        // 清空参数
+        mRecognizerDialog.setParameter(SpeechConstant.PARAMS, null);
+
+        // 设置听写引擎
+        mRecognizerDialog.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD);
+        // 设置返回结果格式
+        mRecognizerDialog.setParameter(SpeechConstant.RESULT_TYPE, "json");
+
+
+        // 设置语言
+        mRecognizerDialog.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
+        // 设置语言区域
+        mRecognizerDialog.setParameter(SpeechConstant.ACCENT, "mandarin");
+
+
+        // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
+        mRecognizerDialog.setParameter(SpeechConstant.VAD_BOS, "4000");
+
+        // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
+        mRecognizerDialog.setParameter(SpeechConstant.VAD_EOS, "1000");
+
+        // 设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
+        mRecognizerDialog.setParameter(SpeechConstant.ASR_PTT, "0");
+
+        // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
+        // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
+        mRecognizerDialog.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
+        mRecognizerDialog.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() + "/msc/iat.wav");
     }
 }

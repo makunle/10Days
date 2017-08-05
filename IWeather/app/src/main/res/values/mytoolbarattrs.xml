@@ -3,6 +3,7 @@
     <declare-styleable name="MyToolbar">
         <attr name="leftBackground" format="reference" />
         <attr name="rightBackground" format="reference" />
+        <attr name="toolbarBackground" format="color"/>
         <attr name="title" format="string" />
         <attr name="showLeftButton" format="boolean" />
         <attr name="showRightButton" format="boolean" />
