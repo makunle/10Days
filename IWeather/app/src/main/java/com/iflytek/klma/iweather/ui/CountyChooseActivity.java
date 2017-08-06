@@ -257,6 +257,9 @@ public class CountyChooseActivity extends AppCompatActivity {
                 if (mTextUnderstander.isUnderstanding()) {
                     mTextUnderstander.cancel();
                 } else {
+                    if(resultText.length() < 4){
+                        resultText += "的天气";
+                    }
                     int ret = mTextUnderstander.understandText(resultText, textUnderstanderListener);
                     if (ret != 0) {
                         showTip("语义理解失败");
