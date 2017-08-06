@@ -103,6 +103,11 @@ public class IflyWeather implements Weather {
         return text;
     }
 
+    @Override
+    public List<Forecast> getTwoDaysForecast() {
+        return null;
+    }
+
     private DataBean data;
     private int rc;
     private String service;

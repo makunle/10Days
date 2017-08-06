@@ -352,7 +352,7 @@ public class CountyChooseActivity extends AppCompatActivity {
                         searchResultInfo("正在查询" + weather.getCountyName() + "的天气...");
                         final String countyName = weather.getCountyName();
                         if (DatabaseUtil.getInstance().getCountyByName(countyName) == null) {
-                            showTip("不支持当前城市");
+                            searchResultInfo("对不起，不支持当前城市");
                         } else {
                             new Thread(new Runnable() {
                                 @Override
@@ -373,12 +373,12 @@ public class CountyChooseActivity extends AppCompatActivity {
                 }
 
             }
-            showTip("语义理解失败");
+            searchResultInfo("对不起，我只是个用来查天气的");
         }
 
         @Override
         public void onError(SpeechError speechError) {
-
+            searchResultInfo("出错了");
         }
     };
 

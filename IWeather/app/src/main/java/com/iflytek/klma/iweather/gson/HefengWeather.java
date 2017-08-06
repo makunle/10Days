@@ -126,6 +126,11 @@ public class HefengWeather implements Weather {
         return null;
     }
 
+    @Override
+    public List<Forecast> getTwoDaysForecast() {
+        return null;
+    }
+
     public List<HeWeatherBean> getHeWeather() {
         return HeWeather;
     }

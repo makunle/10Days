@@ -1,5 +1,7 @@
 package com.iflytek.klma.iweather.gson;
 
+import java.util.List;
+
 /**
  * Created by Administrator on 2017/8/3.
  */
@@ -64,4 +66,13 @@ public interface Weather {
     public String getAQI();
 
     public String getExtraInfo();
+
+    public List<Forecast> getTwoDaysForecast();
+
+    public static class Forecast{
+        public String date;
+        public String info;
+        public String minTemperature;
+        public String maxTemperature;
+    }
 }
