@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.iflytek.klma.iweather.db.Alarm;
+import com.iflytek.klma.iweather.db.City;
 import com.iflytek.klma.iweather.db.County;
+import com.iflytek.klma.iweather.db.Province;
 import com.iflytek.klma.iweather.db.WeatherBookmark;
 
 import org.greenrobot.eventbus.EventBus;
@@ -165,6 +167,13 @@ public class DatabaseUtil {
     public County getCountyByName(String countyName) {
         County county = DataSupport.where("name = ?", countyName).findFirst(County.class);
         return county;
+    }
+
+    public boolean isPlaceExist(String name){
+        if(DataSupport.where("name = ?", name).findFirst(County.class) != null) return true;
+        if(DataSupport.where("name = ?", name).findFirst(City.class) != null) return true;
+        if(DataSupport.where("name = ?", name).findFirst(Province.class) != null) return true;
+        return false;
     }
 
     /**

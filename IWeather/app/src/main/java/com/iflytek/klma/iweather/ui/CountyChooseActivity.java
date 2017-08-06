@@ -257,7 +257,7 @@ public class CountyChooseActivity extends AppCompatActivity {
                 if (mTextUnderstander.isUnderstanding()) {
                     mTextUnderstander.cancel();
                 } else {
-                    if(resultText.length() < 4){
+                    if(DatabaseUtil.getInstance().isPlaceExist(resultText)){
                         resultText += "的天气";
                     }
                     int ret = mTextUnderstander.understandText(resultText, textUnderstanderListener);
@@ -376,7 +376,7 @@ public class CountyChooseActivity extends AppCompatActivity {
                 }
 
             }
-            searchResultInfo("对不起，我只是个用来查天气的");
+            searchResultInfo("只支持国内城市天气查询");
         }
 
         @Override
