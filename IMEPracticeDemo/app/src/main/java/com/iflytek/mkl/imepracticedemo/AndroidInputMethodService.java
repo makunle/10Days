@@ -72,8 +72,8 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     public void onCreate() {
         super.onCreate();
 
-        registerReceiver();   //使用BroadcastReceiver方式监听短信
-//        registerObserver();     //使用ContentObserver监听短信
+//        registerReceiver();   //使用BroadcastReceiver方式监听短信
+        registerObserver();     //使用ContentObserver监听短信
     }
 
     @Override

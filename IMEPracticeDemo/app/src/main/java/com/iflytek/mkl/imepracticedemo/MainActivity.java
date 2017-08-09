@@ -2,18 +2,17 @@ package com.iflytek.mkl.imepracticedemo;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.iflytek.mkl.imepracticedemo.permission.NavigateManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver cr = getContentResolver();
         String[] projection = new String[]{"body"};//"_id", "address", "person",, "date", "type
         String where = "  date >  " + 0 + "";
-        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), null, where, null, "date desc limit 1");
+        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), null, where, null, "date desc limit 10");
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String body = cursor.getString(cursor.getColumnIndex("body"));
@@ -66,18 +65,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, REQUEST_CODE);
             return false;
         }
-
-        Intent localIntent = new Intent();
-        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (Build.VERSION.SDK_INT >= 9) {
-            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-            localIntent.setData(Uri.fromParts("package", getPackageName(), null));
-        } else if (Build.VERSION.SDK_INT <= 8) {
-            localIntent.setAction(Intent.ACTION_VIEW);
-            localIntent.setClassName("com.android.settings", "com.android.settings.InstalledAppDetails");
-            localIntent.putExtra("com.android.settings.ApplicationPkgName", getPackageName());
-        }
-        startActivity(localIntent);
+        NavigateManager.with(this).navigate();
         return true;
     }
 

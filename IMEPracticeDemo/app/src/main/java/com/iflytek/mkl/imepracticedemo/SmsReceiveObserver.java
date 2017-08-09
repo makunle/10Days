@@ -24,6 +24,7 @@ public class SmsReceiveObserver extends ContentObserver {
 
     private Context context;
     private Handler handler;
+    private int preId = 0;
 
     public SmsReceiveObserver(Handler handler, Context context) {
         super(handler);
@@ -37,23 +38,25 @@ public class SmsReceiveObserver extends ContentObserver {
         String[] projection = new String[]{"_id", "body"};//"_id", "address", "person",, "date", "type
         //5s之内收到的短信
         long now = new Date().getTime() - 5000;
-        String where = "  date >  " + now + " and seen = 0";
-        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), projection, where, null, "date desc");
+        String where = "  date >  " + now + " and read = 0";
+        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), projection, where, null, "date desc limit 1");
         if (cursor != null) {
-            while (cursor.moveToNext()) {
+            if (cursor.moveToNext()) {
                 String body = cursor.getString(cursor.getColumnIndex("body"));
-                String id = cursor.getString(cursor.getColumnIndex("_id"));
+                int id = cursor.getInt(cursor.getColumnIndex("_id"));
                 String code = VerificationCodeGetter.getCode(body);
+                if(id < preId) return;
                 if (!TextUtils.isEmpty(code) && handler != null) {
                     Message msg = new Message();
                     msg.what = AndroidInputMethodService.IS_CODE;
                     msg.obj = VerificationCodeGetter.getCode(body);
                     handler.sendMessage(msg);
 
-                    ContentValues values = new ContentValues();
+                    preId = id;
+//                    ContentValues values = new ContentValues();
 //                    values.put("read", 1);  //设置read为1不提醒
-                    values.put("seen", 1);  //设置seen为1也提醒
-                    int res = cr.update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
+////                    values.put("seen", 1);  //设置seen为1也提醒
+//                    int res = cr.update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
                 }
             }
         }
