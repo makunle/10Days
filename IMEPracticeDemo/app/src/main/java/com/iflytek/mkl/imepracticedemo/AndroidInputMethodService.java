@@ -2,6 +2,7 @@ package com.iflytek.mkl.imepracticedemo;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
 import android.net.Uri;
@@ -35,30 +36,53 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     private TextView candidateTextView;
 
     private SmsReceiveObserver smsReceiveObserver;
+    private SmsReceiveBroadcastReceiver smsReceiveBroadcastReceiver;
 
     private Handler codeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == IS_CODE) {
+            if (msg.what == IS_CODE && candidateTextView != null) {
                 candidateTextView.setText((String) msg.obj);
             }
         }
     };
 
+    private void registerObserver() {
+        smsReceiveObserver = new SmsReceiveObserver(codeHandler, this);
+        getContentResolver().registerContentObserver(
+                Uri.parse("content://sms/"), true,
+                smsReceiveObserver
+        );
+    }
+
+    private void registerReceiver() {
+        smsReceiveBroadcastReceiver = new SmsReceiveBroadcastReceiver();
+        IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        filter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(smsReceiveBroadcastReceiver, filter);
+        smsReceiveBroadcastReceiver.setMessageListener(new SmsReceiveBroadcastReceiver.MessageListener() {
+            @Override
+            public void onReceiveVerificationCode(String code) {
+                if (candidateTextView != null) candidateTextView.setText(code);
+            }
+        });
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-        smsReceiveObserver = new SmsReceiveObserver(codeHandler, this);
-        getContentResolver().registerContentObserver(
-                Uri.parse("content://sms"), true,
-                smsReceiveObserver
-        );
+
+//        registerReceiver();
+        registerObserver();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getContentResolver().unregisterContentObserver(smsReceiveObserver);
+        if (smsReceiveObserver != null)
+            getContentResolver().unregisterContentObserver(smsReceiveObserver);
+        if (smsReceiveBroadcastReceiver != null)
+            unregisterReceiver(smsReceiveBroadcastReceiver);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

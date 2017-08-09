@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.iflytek.mkl.imepracticedemo">
 
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -22,13 +22,16 @@
 
         <service
             android:name=".AndroidInputMethodService"
-            android:permission="android.permission.BIND_INPUT_METHOD" >
+            android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
-            <meta-data android:name="android.view.im"
-                android:resource="@xml/imemethod"/>
+
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/imemethod" />
         </service>
+
     </application>
 
 </manifest>
