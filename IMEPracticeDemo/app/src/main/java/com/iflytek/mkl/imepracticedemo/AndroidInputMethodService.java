@@ -72,12 +72,13 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     public void onCreate() {
         super.onCreate();
 
-//        registerReceiver();
-        registerObserver();
+        registerReceiver();   //使用BroadcastReceiver方式监听短信
+//        registerObserver();     //使用ContentObserver监听短信
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         super.onDestroy();
         if (smsReceiveObserver != null)
             getContentResolver().unregisterContentObserver(smsReceiveObserver);
@@ -85,15 +86,23 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
             unregisterReceiver(smsReceiveBroadcastReceiver);
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getVerificationCode(String code) {
         candidateTextView.setText(code);
     }
 
     @Override
+    public void onWindowShown() {
+        super.onWindowShown();
+        Log.d(TAG, "onWindowShown: ");
+    }
+
+    @Override
     public View onCreateInputView() {
+        Log.d(TAG, "onCreateInputView: ");
         View view = getLayoutInflater().inflate(R.layout.keyboard, null);
-        for (int i = R.id.n0; i <= R.id.delete; i++) {
+        for (int i = R.id.n1; i <= R.id.delete; i++) {
             TextView key = (TextView) view.findViewById(i);
             key.setOnClickListener(this);
             key.setOnLongClickListener(this);
@@ -133,6 +142,7 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
 
     @Override
     public View onCreateCandidatesView() {
+        Log.d(TAG, "onCreateCandidatesView: ");
         setCandidatesViewShown(true);
         View v = getLayoutInflater().inflate(R.layout.candidate, null);
         candidateTextView = (TextView) v.findViewById(R.id.candidate);

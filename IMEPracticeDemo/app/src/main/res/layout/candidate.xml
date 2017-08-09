@@ -20,11 +20,12 @@
             android:layout_weight="1"
             android:textColor="#000"
             android:textSize="20sp" />
+
         <TextView
             android:id="@+id/hide"
             android:text="↓"
             android:textSize="20sp"
-            android:layout_width="30dp"
+            android:layout_width="50dp"
             android:gravity="center"
             android:layout_height="wrap_content" />
     </LinearLayout>
