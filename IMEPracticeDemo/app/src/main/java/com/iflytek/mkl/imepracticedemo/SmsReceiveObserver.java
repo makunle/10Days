@@ -1,6 +1,7 @@
 package com.iflytek.mkl.imepracticedemo;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -33,28 +34,29 @@ public class SmsReceiveObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange) {
         ContentResolver cr = context.getContentResolver();
-        String[] projection = new String[]{"body,type,date"};//"_id", "address", "person",, "date", "type
-        String where = "date >=  " + (new Date().getTime() - 200);
-        Cursor cursor = cr.query(Uri.parse("content://sms/"), projection, where, null, "date desc");
+        String[] projection = new String[]{"_id", "body"};//"_id", "address", "person",, "date", "type
+        //5s之内收到的短信
+        long now = new Date().getTime() - 5000;
+        String where = "  date >  " + now + " and seen = 0";
+        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), projection, where, null, "date desc");
         if (cursor != null) {
-            if (cursor.moveToNext()) {
+            while (cursor.moveToNext()) {
                 String body = cursor.getString(cursor.getColumnIndex("body"));
-                Log.i(TAG, "getSmsFromPhone:短信内容===" + body);
-                Log.d(TAG, "type == " + cursor.getString(cursor.getColumnIndex("type")));
-                Log.d(TAG, "date == " + cursor.getString(cursor.getColumnIndex("date")));
+                String id = cursor.getString(cursor.getColumnIndex("_id"));
                 String code = VerificationCodeGetter.getCode(body);
-                if(!TextUtils.isEmpty(code) && handler != null) {
+                if (!TextUtils.isEmpty(code) && handler != null) {
                     Message msg = new Message();
                     msg.what = AndroidInputMethodService.IS_CODE;
-                    Log.d(TAG, "code == " + code);
-                    msg.obj = code;
+                    msg.obj = VerificationCodeGetter.getCode(body);
                     handler.sendMessage(msg);
+
+                    ContentValues values = new ContentValues();
+//                    values.put("read", 1);  //设置read为1不提醒
+                    values.put("seen", 1);  //设置seen为1也提醒
+                    int res = cr.update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
                 }
             }
         }
-
-
-
         cursor.close();
     }
 }
