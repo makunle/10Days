@@ -1,5 +1,6 @@
 package com.iflytek.klma.iweather.util;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -23,8 +24,11 @@ public class JsonUtil {
      * @return 如果不成功返回null
      */
     public static Weather handleHefengJson(String json){
-        HefengWeather weather =  new Gson().fromJson(json, HefengWeather.class);
-        if(weather!=null && weather.isStatusOk()) return weather;
+        if(TextUtils.isEmpty(json)) return null;
+        try {
+            HefengWeather weather = new Gson().fromJson(json, HefengWeather.class);
+            if (weather != null && weather.isStatusOk()) return weather;
+        }catch (Exception e){}
         return null;
     }
 

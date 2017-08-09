@@ -270,9 +270,11 @@ public class WeatherShowActivity extends AppCompatActivity {
                     String json = HttpUtil.getResponse(requestUrl);
                     if (!TextUtils.isEmpty(json)) {
                         Weather weather = JsonUtil.handleHefengJson(json);
-                        wb.setWeatherData(json);
-                        wb.setUpdateTime(Util.stringTime2long(weather.getUpdateTime()));
-                        wb.save();
+                        if(weather != null) {
+                            wb.setWeatherData(json);
+                            wb.setUpdateTime(Util.stringTime2long(weather.getUpdateTime()));
+                            wb.save();
+                        }
                     }
                 }
                 runOnUiThread(new Runnable() {
