@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2017/8/9.
@@ -24,7 +25,7 @@ public class SmsReceiveObserver extends ContentObserver {
 
     private Context context;
     private Handler handler;
-    private int preId = 0;
+    private Pattern pattern = Pattern.compile("content://sms/\\d+");    //只接收content://sms/1321 这样的onChange
 
     public SmsReceiveObserver(Handler handler, Context context) {
         super(handler);
@@ -33,33 +34,24 @@ public class SmsReceiveObserver extends ContentObserver {
     }
 
     @Override
-    public void onChange(boolean selfChange) {
-        ContentResolver cr = context.getContentResolver();
-        String[] projection = new String[]{"_id", "body"};//"_id", "address", "person",, "date", "type
-        //5s之内收到的短信
-        long now = new Date().getTime() - 5000;
-        String where = "  date >  " + now + " and read = 0";
-        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), projection, where, null, "date desc limit 1");
-        if (cursor != null) {
-            if (cursor.moveToNext()) {
+    public void onChange(boolean selfChange, Uri uri) {
+        if(selfChange) return;
+        if(!pattern.matcher(uri.toString()).matches()) return;
+
+        ContentResolver contentObserver = context.getContentResolver();
+        Cursor cursor = contentObserver.query(uri, null, null, null, null);
+        if(cursor != null){
+            if(cursor.moveToNext()){
                 String body = cursor.getString(cursor.getColumnIndex("body"));
-                int id = cursor.getInt(cursor.getColumnIndex("_id"));
                 String code = VerificationCodeGetter.getCode(body);
-                if(id < preId) return;
                 if (!TextUtils.isEmpty(code) && handler != null) {
                     Message msg = new Message();
                     msg.what = AndroidInputMethodService.IS_CODE;
                     msg.obj = VerificationCodeGetter.getCode(body);
                     handler.sendMessage(msg);
-
-                    preId = id;
-//                    ContentValues values = new ContentValues();
-//                    values.put("read", 1);  //设置read为1不提醒
-////                    values.put("seen", 1);  //设置seen为1也提醒
-//                    int res = cr.update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
                 }
             }
+            cursor.close();
         }
-        cursor.close();
     }
 }

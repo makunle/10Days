@@ -32,28 +32,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        ContentResolver cr = getContentResolver();
-        String[] projection = new String[]{"body"};//"_id", "address", "person",, "date", "type
-        String where = "  date >  " + 0 + "";
-        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), null, where, null, "date desc limit 10");
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                String body = cursor.getString(cursor.getColumnIndex("body"));
-                Log.i(TAG, "body ===" + cursor.getString(cursor.getColumnIndex("body")));
-                Log.i(TAG, "status ===" + cursor.getString(cursor.getColumnIndex("status")));
-                Log.i(TAG, "date ===" + cursor.getString(cursor.getColumnIndex("date")));
-                Log.i(TAG, "seen ===" + cursor.getString(cursor.getColumnIndex("seen")));
-                Log.i(TAG, "read ===" + cursor.getString(cursor.getColumnIndex("read")));
-                String id = cursor.getString(cursor.getColumnIndex("_id"));
-                String code = VerificationCodeGetter.getCode(body);
+//        ContentResolver cr = getContentResolver();
+//        String[] projection = new String[]{"body"};//"_id", "address", "person",, "date", "type
+//        String where = "  date >  " + 0 + "";
+//        Cursor cursor = cr.query(Uri.parse("content://sms/inbox"), null, where, null, "date desc limit 10");
+//        if (cursor != null) {
+//            while (cursor.moveToNext()) {
+//                String body = cursor.getString(cursor.getColumnIndex("body"));
+//                Log.i(TAG, "body ===" + cursor.getString(cursor.getColumnIndex("body")));
+//                Log.i(TAG, "status ===" + cursor.getString(cursor.getColumnIndex("status")));
+//                Log.i(TAG, "date ===" + cursor.getString(cursor.getColumnIndex("date")));
+//                Log.i(TAG, "seen ===" + cursor.getString(cursor.getColumnIndex("seen")));
+//                Log.i(TAG, "read ===" + cursor.getString(cursor.getColumnIndex("read")));
+//                String id = cursor.getString(cursor.getColumnIndex("_id"));
+//                String code = VerificationCodeGetter.getCode(body);
+////
+////                ContentValues values = new ContentValues();
+////                values.put("read", 1);
+////                int res = getContentResolver().update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
+////                Log.d(TAG, "upate === " + res + " id === " + id);
 //
-//                ContentValues values = new ContentValues();
-//                values.put("read", 1);
-//                int res = getContentResolver().update(Uri.parse("content://sms/inbox"), values, "_id = ?", new String[]{id + ""});
-//                Log.d(TAG, "upate === " + res + " id === " + id);
-
-            }
-        }
+//            }
+//        }
     }
 
     private boolean getReadSMSPermission() {

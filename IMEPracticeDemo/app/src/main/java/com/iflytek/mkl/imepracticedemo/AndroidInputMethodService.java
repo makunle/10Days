@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,6 +116,7 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     @Override
     public void onClick(View v) {
         InputConnection inputConnection = getCurrentInputConnection();
+
         switch (v.getId()) {
             case R.id.hide:
                 hideWindow();
@@ -130,6 +132,12 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
                 inputConnection.deleteSurroundingText(1, 0);
                 break;
             case R.id.candidate:
+//                String input = candidateTextView.getText().toString();
+//                for (int i = 0; i < input.length(); i++) {
+//                    inputConnection = getCurrentInputConnection();
+//                    getCurrentInputEditorInfo();
+//                    inputConnection.commitText(""+input.charAt(i), 1);
+//                }
                 inputConnection.commitText(candidateTextView.getText().toString(), 1);
                 candidateTextView.setText("");
                 break;
