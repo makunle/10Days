@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/8/9.
+ * app权限设置页跳转
  */
 
 public class NavigateManager {

@@ -1,23 +1,16 @@
 package com.iflytek.mkl.imepracticedemo;
 
-import android.app.Service;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.inputmethodservice.InputMethodService;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,12 +36,12 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == IS_CODE && candidateTextView != null) {
-                candidateTextView.setText((String) msg.obj);
+                candidateTextView.setText((String) msg.obj + "  contentobserver");
             }
         }
     };
 
-    private void registerObserver() {
+    private void registerContentObserver() {
         smsReceiveObserver = new SmsReceiveObserver(codeHandler, this);
         getContentResolver().registerContentObserver(
                 Uri.parse("content://sms/"), true,
@@ -56,7 +49,7 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         );
     }
 
-    private void registerReceiver() {
+    private void registerBroadcastReceiver() {
         smsReceiveBroadcastReceiver = new SmsReceiveBroadcastReceiver();
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
         filter.setPriority(Integer.MAX_VALUE);
@@ -64,18 +57,33 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         smsReceiveBroadcastReceiver.setMessageListener(new SmsReceiveBroadcastReceiver.MessageListener() {
             @Override
             public void onReceiveVerificationCode(String code) {
-                if (candidateTextView != null) candidateTextView.setText(code);
+                if (candidateTextView != null) candidateTextView.setText(code + " broadcast");
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveFromNotificationListener(String code){
+        if(candidateTextView != null && !TextUtils.isEmpty(code)){
+            candidateTextView.setText(code +" notification");
+        }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-//        registerReceiver();   //使用BroadcastReceiver方式监听短信
-        registerObserver();     //使用ContentObserver监听短信
+        SharedPreferences preferences = getSharedPreferences(MainActivity.PREFERENCE, MODE_PRIVATE);
+        if (preferences.getBoolean(MainActivity.BROADCAST, false)) {
+            registerBroadcastReceiver();   //使用BroadcastReceiver方式监听短信
+        } else if (preferences.getBoolean(MainActivity.CONTENT, false)) {
+            registerContentObserver();     //使用ContentObserver监听短信
+        } else if (preferences.getBoolean(MainActivity.NOTIFICATION, true)) {
+            EventBus.getDefault().register(this);
+        }
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -85,12 +93,7 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
             getContentResolver().unregisterContentObserver(smsReceiveObserver);
         if (smsReceiveBroadcastReceiver != null)
             unregisterReceiver(smsReceiveBroadcastReceiver);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getVerificationCode(String code) {
-        candidateTextView.setText(code);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

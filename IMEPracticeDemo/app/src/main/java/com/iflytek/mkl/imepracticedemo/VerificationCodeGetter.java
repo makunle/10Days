@@ -31,7 +31,7 @@ public class VerificationCodeGetter {
 
         String type = getCodeType(str);           //获取验证码类型
         if (type == null) return null;
-        str = removeNameSurround(str, type);      //删除(xxx type xxx)中的xxx
+        str = removeNameSurround(str, type);      //删除(xxx type xxx)     ,xxx type xxx, 中的xxx
         str = removeTitleSurround(str);           //删除【xxx】类似的title
         String code = getCode(str, type);
         return code;
@@ -53,7 +53,12 @@ public class VerificationCodeGetter {
      * @return
      */
     private static String removeNameSurround(String str, String type) {
-        String nameSurround = "(【.*?" + type + ".*?】) | (\\(.*?" + type + ".*?\\)) | (\\[*?" + type + ".*?\\]) | (（.*?" + type + ".*?）)";
+        String nameSurround = "(【.*?" + type + ".*?】) | " +
+                "(\\(.*?" + type + ".*?\\)) | " +
+                "(\\[*?" + type + ".*?\\]) | " +
+                "(（.*?" + type + ".*?）) | " +
+                "(，.*?" + type + ".*?，) |" +
+                "(,.*?" + type + ".*?,) ";
         Matcher m = Pattern.compile(nameSurround, Pattern.COMMENTS).matcher(str);
 
         int start = 0;
