@@ -1,7 +1,9 @@
 package com.iflytek.mkl.imepracticedemo;
 
+import android.content.ComponentName;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.inputmethodservice.InputMethodService;
 import android.net.Uri;
 import android.os.Handler;
@@ -32,23 +34,42 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     private SmsReceiveObserver smsReceiveObserver;
     private SmsReceiveBroadcastReceiver smsReceiveBroadcastReceiver;
 
-    private Handler codeHandler = new Handler() {
+    /**
+     * content observer 方式获取的结果
+     */
+    private Handler contentObserverHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == IS_CODE && candidateTextView != null) {
-                candidateTextView.setText((String) msg.obj + "  contentobserver");
+                candidateTextView.setText((String) msg.obj);
             }
         }
     };
 
     private void registerContentObserver() {
-        smsReceiveObserver = new SmsReceiveObserver(codeHandler, this);
+        smsReceiveObserver = new SmsReceiveObserver(contentObserverHandler, this);
         getContentResolver().registerContentObserver(
                 Uri.parse("content://sms/"), true,
                 smsReceiveObserver
         );
     }
 
+    /**
+     * 重启notification listener service
+     */
+    private void toggleNotificationListenerService() {
+        PackageManager pm = getPackageManager();
+        pm.setComponentEnabledSetting(
+                new ComponentName(this, SMSNotificationListenerService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(
+                new ComponentName(this, SMSNotificationListenerService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
+
+    /**
+     * broadcast receiver方式注册，及结果获取
+     */
     private void registerBroadcastReceiver() {
         smsReceiveBroadcastReceiver = new SmsReceiveBroadcastReceiver();
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
@@ -57,15 +78,19 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         smsReceiveBroadcastReceiver.setMessageListener(new SmsReceiveBroadcastReceiver.MessageListener() {
             @Override
             public void onReceiveVerificationCode(String code) {
-                if (candidateTextView != null) candidateTextView.setText(code + " broadcast");
+                if (candidateTextView != null) candidateTextView.setText(code);
             }
         });
     }
 
+    /**
+     * notification listener service 方式获取的结果
+     * @param code
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void receiveFromNotificationListener(String code){
         if(candidateTextView != null && !TextUtils.isEmpty(code)){
-            candidateTextView.setText(code +" notification");
+            candidateTextView.setText(code);
         }
     }
 
@@ -80,7 +105,10 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
             registerContentObserver();     //使用ContentObserver监听短信
         } else if (preferences.getBoolean(MainActivity.NOTIFICATION, true)) {
             EventBus.getDefault().register(this);
+            toggleNotificationListenerService();
         }
+
+        Log.d(TAG, "onCreate: ");
     }
 
 

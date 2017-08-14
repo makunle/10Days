@@ -31,9 +31,11 @@ public class VerificationCodeGetter {
 
         String type = getCodeType(str);           //获取验证码类型
         if (type == null) return null;
+        String code = getSpecificCode(str, type);
+        if(code != null) return code;
         str = removeNameSurround(str, type);      //删除(xxx type xxx)     ,xxx type xxx, 中的xxx
         str = removeTitleSurround(str);           //删除【xxx】类似的title
-        String code = getCode(str, type);
+        code = getCode(str, type);
         return code;
     }
 
@@ -57,8 +59,8 @@ public class VerificationCodeGetter {
                 "(\\(.*?" + type + ".*?\\)) | " +
                 "(\\[*?" + type + ".*?\\]) | " +
                 "(（.*?" + type + ".*?）) | " +
-                "(，.*?" + type + ".*?，) |" +
-                "(,.*?" + type + ".*?,) ";
+                "(，.*?" + type + "，) |" +
+                "(,.*?" + type + ",) ";
         Matcher m = Pattern.compile(nameSurround, Pattern.COMMENTS).matcher(str);
 
         int start = 0;
@@ -94,21 +96,13 @@ public class VerificationCodeGetter {
     }
 
     /**
-     * 获取验证短信中的验证码
-     * 首先看是否有  验证码[是\为\:\(]之类的字样，有的话验证码为其后紧跟的内容
-     * 如果没有的话先找到  验证码  所在的位置，然后找距离它最近的 可能为code的内容
-     * 距离相同时，默认左边为有效内容
-     *
-     * @param msg
-     * @return
+     * 获取有type + signReg类型的code
      */
-    private static String getCode(String msg, String type) {
-
+    private static String getSpecificCode(String msg, String type){
         final String flagReg = type + signReg;
 
         Matcher m = Pattern.compile(codeReg).matcher(msg);
         Matcher fullFlag = Pattern.compile(flagReg + "+").matcher(msg);
-        Matcher flag = Pattern.compile(flagReg + "*").matcher(msg);
 
         //有明确的标识时，直接确定验证码
         int index = -1;
@@ -125,7 +119,23 @@ public class VerificationCodeGetter {
             if (index >= msg.length()) break;
         }
         if (!TextUtils.isEmpty(haveFlagRes)) return haveFlagRes;
+        return null;
+    }
+    /**
+     * 获取验证短信中的验证码
+     * 首先看是否有  验证码[是\为\:\(]之类的字样，有的话验证码为其后紧跟的内容
+     * 如果没有的话先找到  验证码  所在的位置，然后找距离它最近的 可能为code的内容
+     * 距离相同时，默认左边为有效内容
+     *
+     * @param msg
+     * @return
+     */
+    private static String getCode(String msg, String type) {
 
+        final String flagReg = type + signReg;
+
+        Matcher m = Pattern.compile(codeReg).matcher(msg);
+        Matcher flag = Pattern.compile(flagReg + "*").matcher(msg);
 
         if (!flag.find()) return null;
 
