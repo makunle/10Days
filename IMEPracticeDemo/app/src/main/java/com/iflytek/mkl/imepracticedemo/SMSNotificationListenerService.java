@@ -60,27 +60,33 @@ public class SMSNotificationListenerService extends NotificationListenerService 
         Log.d(TAG, "onDestroy");
     }
 
+    /**
+     * 获取新post的notification，
+     * API < 18 时，可用accessibility
+     * @param sbn
+     */
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
 
         Notification notification = sbn.getNotification();
         String code = null;
-        if(!TextUtils.isEmpty(notification.tickerText)){
+        //如果tickerText有内容，直接获取
+        if (!TextUtils.isEmpty(notification.tickerText)) {
             code = VerificationCodeGetter.getCode(notification.tickerText.toString());
-        }else{
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                code = greaterThanAPI18(notification);
-            }else{
-                //API小于18时，使用accessibility
-            }
+        } else {
+//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+            code = greaterThanAPI18(notification);
+//            }else{
+            //API小于18时，使用accessibility
+//            }
         }
-        if(code == null) code = "";
+        if (code == null) code = "";
         EventBus.getDefault().post(code);
     }
 
-    private String greaterThanAPI18(Notification notification){
-        if(notification.contentView == null) return null;
+    private String greaterThanAPI18(Notification notification) {
+        if (notification.contentView == null) return null;
         try {
             RemoteViews views = notification.contentView;
             Field field = views.getClass().getDeclaredField("mActions");
@@ -104,7 +110,7 @@ public class SMSNotificationListenerService extends NotificationListenerService 
                     parcel.readInt();
                     String t = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel).toString().trim();
                     String code = VerificationCodeGetter.getCode(t);
-                    if(!TextUtils.isEmpty(code)) return code;
+                    if (!TextUtils.isEmpty(code)) return code;
                 }
                 parcel.recycle();
             }

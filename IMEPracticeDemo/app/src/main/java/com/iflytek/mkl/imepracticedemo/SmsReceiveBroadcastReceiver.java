@@ -15,16 +15,23 @@ public class SmsReceiveBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "smscode";
     private MessageListener messageListener;
+    private Context context;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        this.context = context;
+
         SmsMessage[] messages = null;
         if (Build.VERSION.SDK_INT >= 19) {
+            Toast.makeText(context, "broadcast msg > 19 begin", Toast.LENGTH_SHORT).show();
             messages = android.provider.Telephony.Sms.Intents.getMessagesFromIntent(intent);
+            Toast.makeText(context, "broadcast msg > 19: " + messages, Toast.LENGTH_SHORT).show();
             if (messages == null) return;
         } else {
+            Toast.makeText(context, "broadcast msg < 19 begin", Toast.LENGTH_SHORT).show();
             messages = getSmsUnder19(intent);
+            Toast.makeText(context, "broadcast msg < 19: " + messages, Toast.LENGTH_SHORT).show();
             if (messages == null) return;
         }
 
@@ -66,6 +73,7 @@ public class SmsReceiveBroadcastReceiver extends BroadcastReceiver {
         for (int i = 0; i < pdus.length; i++) {
             messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
         }
+
         return messages;
     }
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.inputmethodservice.InputMethodService;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -41,7 +43,7 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == IS_CODE && candidateTextView != null) {
-                candidateTextView.setText((String) msg.obj);
+                candidateTextView.setText((String) msg.obj  + " observer");
             }
         }
     };
@@ -78,19 +80,20 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
         smsReceiveBroadcastReceiver.setMessageListener(new SmsReceiveBroadcastReceiver.MessageListener() {
             @Override
             public void onReceiveVerificationCode(String code) {
-                if (candidateTextView != null) candidateTextView.setText(code);
+                if (candidateTextView != null) candidateTextView.setText(code + " broadcast");
             }
         });
     }
 
     /**
      * notification listener service 方式获取的结果
+     *
      * @param code
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receiveFromNotificationListener(String code){
-        if(candidateTextView != null && !TextUtils.isEmpty(code)){
-            candidateTextView.setText(code);
+    public void receiveFromNotificationListener(String code) {
+        if (candidateTextView != null && !TextUtils.isEmpty(code)) {
+            candidateTextView.setText(code  + " notification");
         }
     }
 
@@ -98,19 +101,24 @@ public class AndroidInputMethodService extends InputMethodService implements Vie
     public void onCreate() {
         super.onCreate();
 
-        SharedPreferences preferences = getSharedPreferences(MainActivity.PREFERENCE, MODE_PRIVATE);
-        if (preferences.getBoolean(MainActivity.BROADCAST, false)) {
-            registerBroadcastReceiver();   //使用BroadcastReceiver方式监听短信
-        } else if (preferences.getBoolean(MainActivity.CONTENT, false)) {
-            registerContentObserver();     //使用ContentObserver监听短信
-        } else if (preferences.getBoolean(MainActivity.NOTIFICATION, true)) {
-            EventBus.getDefault().register(this);
-            toggleNotificationListenerService();
-        }
+//        if (Build.VERSION.SDK_INT < 18) {
+//            registerContentObserver();     //使用ContentObserver监听短信
+//        } else {
+            SharedPreferences preferences = getSharedPreferences(MainActivity.PREFERENCE, MODE_PRIVATE);
+            if (preferences.getBoolean(MainActivity.BROADCAST, false)) {
+                registerBroadcastReceiver();   //使用BroadcastReceiver方式监听短信
+                Toast.makeText(this, "use broadcast", Toast.LENGTH_SHORT).show();
+            } else if (preferences.getBoolean(MainActivity.CONTENT, false)) {
+                Toast.makeText(this, "use observer", Toast.LENGTH_SHORT).show();
+                registerContentObserver();     //使用ContentObserver监听短信
+            } else if (preferences.getBoolean(MainActivity.NOTIFICATION, true)) {
+                EventBus.getDefault().register(this);
+                toggleNotificationListenerService();
+            }
+//        }
 
         Log.d(TAG, "onCreate: ");
     }
-
 
 
     @Override

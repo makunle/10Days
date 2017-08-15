@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -33,25 +34,48 @@ public class SmsReceiveObserver extends ContentObserver {
         this.context = context;
     }
 
-    @Override
-    public void onChange(boolean selfChange, Uri uri) {
-        if(selfChange) return;
-        if(!pattern.matcher(uri.toString()).matches()) return;
+    private void deal(boolean selfChange, Uri uri){
+        Log.d(TAG, "onChange with two paramater");
+        if (selfChange) return;
+        if (!pattern.matcher(uri.toString()).matches()) return;
 
         ContentResolver contentObserver = context.getContentResolver();
         Cursor cursor = contentObserver.query(uri, null, null, null, null);
-        if(cursor != null){
-            if(cursor.moveToNext()){
+        if (cursor != null) {
+            if (cursor.moveToNext()) {
                 String body = cursor.getString(cursor.getColumnIndex("body"));
                 String code = VerificationCodeGetter.getCode(body);
+                Toast.makeText(context, "observer msg:" + body, Toast.LENGTH_SHORT).show();
                 if (!TextUtils.isEmpty(code) && handler != null) {
                     Message msg = new Message();
                     msg.what = AndroidInputMethodService.IS_CODE;
+
                     msg.obj = VerificationCodeGetter.getCode(body);
                     handler.sendMessage(msg);
                 }
             }
             cursor.close();
+        }
+    }
+
+    @Override
+    public void onChange(boolean selfChange, Uri uri) {
+        deal(selfChange, uri);
+    }
+
+    @Override
+    public void onChange(boolean selfChange) {
+        if (Build.VERSION.SDK_INT >= 16) return;
+        Toast.makeText(context, "in one param func begin", Toast.LENGTH_SHORT).show();
+        Cursor cursor = context.getContentResolver().query(
+                Uri.parse("content://sms/inbox"), null, null, null, "date desc limit 1"
+        );
+        Toast.makeText(context, "in one param func" + (cursor == null), Toast.LENGTH_SHORT).show();
+        if (cursor != null) {
+            cursor.moveToNext();
+            String id = cursor.getString(cursor.getColumnIndex("_id"));
+            deal(selfChange, Uri.parse("content://sms/" + id));
+            Log.d(TAG, "onChange with one paramater");
         }
     }
 }

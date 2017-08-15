@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -44,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     RadioButton contentRecBtn;
     RadioButton notificationReadBtn;
 
+    Button smsPerBtn;
+    Button codesmsPerBtn;
+    Button notiPerBtn;
+
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
@@ -62,9 +67,14 @@ public class MainActivity extends AppCompatActivity {
         broadcastLtnBtn.setOnClickListener(clickListener);
         contentRecBtn.setOnClickListener(clickListener);
         notificationReadBtn.setOnClickListener(clickListener);
-        findViewById(R.id.code_permission).setOnClickListener(clickListener);
-        findViewById(R.id.notification_permission).setOnClickListener(clickListener);
-        findViewById(R.id.sms_permission).setOnClickListener(clickListener);
+
+        codesmsPerBtn = (Button) findViewById(R.id.code_permission);
+        notiPerBtn = (Button) findViewById(R.id.notification_permission);
+        smsPerBtn = (Button) findViewById(R.id.sms_permission);
+
+        notiPerBtn.setOnClickListener(clickListener);
+        codesmsPerBtn.setOnClickListener(clickListener);
+        smsPerBtn.setOnClickListener(clickListener);
     }
 
     @Override
@@ -73,8 +83,20 @@ public class MainActivity extends AppCompatActivity {
         broadcastLtnBtn.setChecked(preferences.getBoolean(BROADCAST, false));
         contentRecBtn.setChecked(preferences.getBoolean(CONTENT, false));
         notificationReadBtn.setChecked(preferences.getBoolean(NOTIFICATION, true));
+        refreshBtnStatus();
     }
 
+    private void refreshBtnStatus(){
+        if (notificationReadBtn.isChecked()) {
+            smsPerBtn.setEnabled(false);
+            codesmsPerBtn.setEnabled(false);
+            notiPerBtn.setEnabled(true);
+        } else {
+            smsPerBtn.setEnabled(true);
+            codesmsPerBtn.setEnabled(true);
+            notiPerBtn.setEnabled(false);
+        }
+    }
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -87,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.putBoolean(CONTENT, contentRecBtn.isChecked());
                     editor.putBoolean(NOTIFICATION, notificationReadBtn.isChecked());
                     editor.commit();
+                    refreshBtnStatus();
                     break;
                 case R.id.code_permission:
                     //获取通知类短信读取权限
@@ -97,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     getNotificationReadPermission();
                     break;
                 case R.id.sms_permission:
+                    Toast.makeText(MainActivity.this, "get sms permission", Toast.LENGTH_SHORT).show();
                     getReadSMSPermission();
                     break;
             }
@@ -114,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
      * 如果没获取通知使用权，跳转到通知使用权设置页面
      */
     private void getNotificationReadPermission() {
-//        if (isNotificationPermissionGranted()) return;
+        if (isNotificationPermissionGranted()) return;
         try {
             Intent intent;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {

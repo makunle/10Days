@@ -15,10 +15,41 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:text="get permission"
-        android:id="@+id/permission_get"
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/use_broadcast"
+            android:text="Use broadcast receiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/use_content_observer"
+            android:text="Use content observer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/use_notification_listener"
+            android:text="Use notification listener"
+            android:checked="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/sms_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="get read SMS permission" />
+    <Button
+        android:id="@+id/code_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="get read sms code permission" />
+    <Button
+        android:id="@+id/notification_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="get read notification permission" />
 
 </LinearLayout>
